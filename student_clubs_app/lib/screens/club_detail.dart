@@ -55,6 +55,7 @@ class _ClubDetailState extends State<ClubDetail> {
               buildClubImage(clubimagedata),
               Column(
                 children: [
+
                   Text("Club President : ${clubpresidentdata}"),
                   Text("Vise President : "),
                   Text("Sayman: "),
@@ -62,6 +63,9 @@ class _ClubDetailState extends State<ClubDetail> {
                   Text("Asil Üye: "),
                   Text("Yedek Üye: "),
                   Text("Yedek Üye: "),
+
+
+                 
 
                 ],
               ),

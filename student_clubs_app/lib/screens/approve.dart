@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class Approve extends StatefulWidget {
-  const Approve({Key? key}) : super(key: key);
+  const Approve({Key key}) : super(key: key);
 
   @override
   State<Approve> createState() => _ApproveState();

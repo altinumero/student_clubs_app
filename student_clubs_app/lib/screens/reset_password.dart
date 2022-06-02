@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class ResetPassword extends StatelessWidget {
-  const ResetPassword({Key? key}) : super(key: key);
+  const ResetPassword({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -15,7 +15,7 @@ import '../screens/my_clubs.dart';
 import '../utils/colors.dart';
 
 class NavigationDrawerWidget extends StatelessWidget {
-  const NavigationDrawerWidget({Key? key}) : super(key: key);
+  const NavigationDrawerWidget({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ class NavigationDrawerWidget extends StatelessWidget {
   }
 
   buildMenuItem(
-      {required String text, required IconData icon, VoidCallback? onClicked}) {
+      { String text,  IconData icon, VoidCallback onClicked}) {
     const color = Appcolors.textColor;
     return ListTile(
       leading: Icon(
@@ -141,7 +141,7 @@ class NavigationDrawerWidget extends StatelessWidget {
     switch (i) {
       case 0:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const ClubsList()));
+            .push(MaterialPageRoute(builder: (context) =>  ClubsList()));
         break;
       case 1:
         Navigator.of(context)

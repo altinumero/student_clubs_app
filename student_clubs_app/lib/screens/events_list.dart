@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class EventsList extends StatefulWidget {
-  const EventsList({Key? key}) : super(key: key);
+  const EventsList({Key key}) : super(key: key);
 
   @override
   State<EventsList> createState() => _EventsListState();

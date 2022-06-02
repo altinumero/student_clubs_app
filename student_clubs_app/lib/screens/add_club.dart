@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class AddClub extends StatelessWidget {
-  AddClub({Key? key}) : super(key: key);
+  AddClub({Key key}) : super(key: key);
   TextEditingController clubNameController = TextEditingController();
   TextEditingController clubAdvisorController = TextEditingController();
   TextEditingController clubPresidentController = TextEditingController();
@@ -13,15 +13,15 @@ class AddClub extends StatelessWidget {
   TextEditingController clubMemberController = TextEditingController();
   TextEditingController clubAltMember1Controller = TextEditingController();
   TextEditingController clubAltMember2Controller = TextEditingController();
-  String? clubName;
-  String? clubAdvisor;
-  String? clubPresident;
-  String? clubVicePresident;
-  String? clubSecretary;
-  String? clubAccountant;
-  String? clubMember;
-  String? clubAltMember1;
-  String? clubAltMember2;
+  String clubName;
+  String clubAdvisor;
+  String clubPresident;
+  String clubVicePresident;
+  String clubSecretary;
+  String clubAccountant;
+  String clubMember;
+  String clubAltMember1;
+  String clubAltMember2;
 
 
   @override

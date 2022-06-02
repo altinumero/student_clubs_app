@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class MyEvents extends StatefulWidget {
-  const MyEvents({Key? key}) : super(key: key);
+  const MyEvents({Key key}) : super(key: key);
 
   @override
   State<MyEvents> createState() => _MyEventsState();

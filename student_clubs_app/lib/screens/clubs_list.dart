@@ -1,15 +1,14 @@
+
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:student_clubs_app/screens/club_detail.dart';
+import 'package:student_clubs_app/utils/colors.dart';
 
-import '../utils/colors.dart';
 
-class ClubsList extends StatefulWidget {
-  const ClubsList({Key? key}) : super(key: key);
+class ClubsList extends StatelessWidget {
 
-  @override
-  State<ClubsList> createState() => _ClubsListState();
-}
 
-class _ClubsListState extends State<ClubsList> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,51 +25,48 @@ class _ClubsListState extends State<ClubsList> {
           ),
         ],
       ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: buildClubList(),
-          ),
-        ],
+      body: StreamBuilder(
+        stream:Firestore.instance
+            .collection('clubs')
+            .snapshots(),
+        builder:(context,streamSnapshot) {
+          if(streamSnapshot.connectionState==ConnectionState.waiting){
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final documents = streamSnapshot.data.documents;
+          return ListView.builder(
+            itemCount: streamSnapshot.data.documents.length,
+            itemBuilder: (context,index)=> Card(
+
+              color:Colors.deepPurpleAccent,
+              elevation: 2.0,
+              child: ListTile(
+                leading: CircleAvatar(
+                    child:Text("Club"),
+                    backgroundImage: NetworkImage(documents[index]['clubImage']),
+                    backgroundColor: Colors.transparent
+                ),
+                title: Text(documents[index]['ClubName']+ " Club"),
+                //subtitle: Text(documents[index]['Description']),
+
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>  ClubDetail(
+                        clubnamedata:documents[index]['ClubName'],clubpresidentdata:documents[index]['ClubPresident'],clubdescriptiondata:documents[index]['Description'],clubimagedata:documents[index]['clubImage'])
+                    ),
+                  );
+                },
+              ),
+            ),);
+        },
       ),
+
+
     );
   }
 
-  buildClubList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 16,
-        ),
-        ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: 14, //kaç tane olduğu veritabanından
-          itemBuilder: (BuildContext context, int position) {
-            return ListTile(
-              leading: ClipOval(
-                child: Material(
-                  child: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: Ink.image(
-                      image: NetworkImage(//logolar veritabanından
-                          "https://cdn.pixabay.com/photo/2022/05/09/17/08/mute-swan-7185076_1280.jpg"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              title: Text("Zınk"), //isimler veritabanından
-              onTap:
-                  () {}, //detay sayfasına aktarıcaz yine veritabanı bağlantısı
-            );
-          },
-        )
-      ],
-    );
-  }
+
 }

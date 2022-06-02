@@ -5,11 +5,11 @@ import 'package:email_validator/email_validator.dart';
 import '../utils/colors.dart';
 
 class Login extends StatelessWidget {
-  String? email;
-  String? password;
+  String email;
+  String password;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  Login({Key? key}) : super(key: key);
+  Login({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

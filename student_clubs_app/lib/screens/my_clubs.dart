@@ -4,7 +4,7 @@ import 'package:student_clubs_app/screens/club_detail.dart';
 import '../utils/colors.dart';
 
 class MyClubs extends StatefulWidget {
-  const MyClubs({Key? key}) : super(key: key);
+  const MyClubs({Key key}) : super(key: key);
 
   @override
   State<MyClubs> createState() => _MyClubsState();

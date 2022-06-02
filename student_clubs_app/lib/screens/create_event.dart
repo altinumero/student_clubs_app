@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class CreateEvent extends StatelessWidget {
-  CreateEvent({Key? key}) : super(key: key);
+  CreateEvent({Key key}) : super(key: key);
   TextEditingController eventNameController = TextEditingController();
   TextEditingController eventPlaceController = TextEditingController();
   TextEditingController eventOwnerController = TextEditingController();
   TextEditingController eventDescriptionController = TextEditingController();
-  String? eventName;
-  String? eventPlace;
-  String? eventOwner;
-  String? eventDescription;
+  String eventName;
+  String eventPlace;
+  String eventOwner;
+  String eventDescription;
 
   @override
   Widget build(BuildContext context) {

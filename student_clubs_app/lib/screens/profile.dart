@@ -4,7 +4,7 @@ import 'package:student_clubs_app/screens/my_events.dart';
 import 'package:student_clubs_app/utils/colors.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+  const Profile({Key key}) : super(key: key);
 
   @override
   State<Profile> createState() => _ProfileState();

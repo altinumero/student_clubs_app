@@ -6,7 +6,7 @@ import 'package:student_clubs_app/utils/colors.dart';
 import '../widgets/navigation_drawer_widget.dart';
 
 class MainClubPage extends StatefulWidget {
-  const MainClubPage({Key? key}) : super(key: key);
+  const MainClubPage({Key key}) : super(key: key);
 
   @override
   State<MainClubPage> createState() => _MainClubPageState();

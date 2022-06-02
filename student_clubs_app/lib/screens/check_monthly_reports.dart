@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class CheckMonthlyReports extends StatefulWidget {
-  const CheckMonthlyReports({Key? key}) : super(key: key);
+  const CheckMonthlyReports({Key key}) : super(key: key);
 
   @override
   State<CheckMonthlyReports> createState() => _CheckMonthlyReportsState();

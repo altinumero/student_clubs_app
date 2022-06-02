@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../utils/colors.dart';
 
 class CheckEventReports extends StatefulWidget {
-  const CheckEventReports({Key? key}) : super(key: key);
+  const CheckEventReports({Key key}) : super(key: key);
 
   @override
   State<CheckEventReports> createState() => _CheckEventReportsState();

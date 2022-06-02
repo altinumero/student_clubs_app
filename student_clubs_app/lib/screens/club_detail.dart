@@ -4,7 +4,13 @@ import 'package:student_clubs_app/screens/event_detail.dart';
 import '../utils/colors.dart';
 
 class ClubDetail extends StatefulWidget {
-  ClubDetail({key, this.clubnamedata,this.clubpresidentdata,this.clubdescriptiondata,this.clubimagedata}) : super(key: key);
+  ClubDetail(
+      {key,
+      this.clubnamedata,
+      this.clubpresidentdata,
+      this.clubdescriptiondata,
+      this.clubimagedata})
+      : super(key: key);
   final clubnamedata;
   final clubpresidentdata;
   final clubdescriptiondata;
@@ -24,8 +30,8 @@ class _ClubDetailState extends State<ClubDetail> {
     final clubdescriptiondata = widget.clubdescriptiondata;
     final clubimagedata = widget.clubimagedata;
     //final String ClubName = clubdata.document['ClubName'];
-
   }
+
   Widget build(BuildContext context) {
     final clubnamedata = widget.clubnamedata;
     final clubpresidentdata = widget.clubpresidentdata;
@@ -55,7 +61,6 @@ class _ClubDetailState extends State<ClubDetail> {
               buildClubImage(clubimagedata),
               Column(
                 children: [
-
                   Text("Club President : ${clubpresidentdata}"),
                   Text("Vise President : "),
                   Text("Sayman: "),
@@ -63,10 +68,6 @@ class _ClubDetailState extends State<ClubDetail> {
                   Text("Asil Üye: "),
                   Text("Yedek Üye: "),
                   Text("Yedek Üye: "),
-
-
-                 
-
                 ],
               ),
               SizedBox(
@@ -76,13 +77,10 @@ class _ClubDetailState extends State<ClubDetail> {
           ),
           sizedBox(16),
           Container(
-            decoration: BoxDecoration(
-              border: Border.all()
-            ),
+            decoration: BoxDecoration(border: Border.all()),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                  "Club Description : ${clubdescriptiondata}"),
+              child: Text("Club Description : ${clubdescriptiondata}"),
             ),
           ),
           sizedBox(16),
@@ -196,7 +194,7 @@ class _ClubDetailState extends State<ClubDetail> {
       child: Material(
         color: Colors.transparent,
         child: Ink.image(
-          image: NetworkImage(clubimagedata//veri tabanından resim
+          image: NetworkImage(clubimagedata //veri tabanından resim
               ),
           fit: BoxFit.cover,
           width: 128,

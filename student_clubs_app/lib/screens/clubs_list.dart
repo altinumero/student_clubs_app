@@ -1,14 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:student_clubs_app/screens/club_detail.dart';
 import 'package:student_clubs_app/utils/colors.dart';
 
-
 class ClubsList extends StatelessWidget {
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,47 +21,65 @@ class ClubsList extends StatelessWidget {
         ],
       ),
       body: StreamBuilder(
-        stream:Firestore.instance
-            .collection('clubs')
-            .snapshots(),
-        builder:(context,streamSnapshot) {
-          if(streamSnapshot.connectionState==ConnectionState.waiting){
+        stream: Firestore.instance.collection('clubs').snapshots(),
+        builder: (context, streamSnapshot) {
+          if (streamSnapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
             );
           }
           final documents = streamSnapshot.data.documents;
           return ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
             itemCount: streamSnapshot.data.documents.length,
-            itemBuilder: (context,index)=> Card(
-
-              color:Colors.deepPurpleAccent,
-              elevation: 2.0,
-              child: ListTile(
-                leading: CircleAvatar(
-                    child:Text("Club"),
-                    backgroundImage: NetworkImage(documents[index]['clubImage']),
-                    backgroundColor: Colors.transparent
-                ),
-                title: Text(documents[index]['ClubName']+ " Club"),
-                //subtitle: Text(documents[index]['Description']),
-
-                onTap: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>  ClubDetail(
-                        clubnamedata:documents[index]['ClubName'],clubpresidentdata:documents[index]['ClubPresident'],clubdescriptiondata:documents[index]['Description'],clubimagedata:documents[index]['clubImage'])
+            itemBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.all(6),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Appcolors.textColor.withOpacity(0.2),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3))
+                    ]),
+                child: ListTile(
+                  leading: ClipOval(
+                    child: Material(
+                      child: CircleAvatar(
+                          child: Ink.image(
+                            image: NetworkImage(documents[index]['clubImage']),
+                            fit: BoxFit.cover,
+                          ),
+                          backgroundColor: Colors.transparent),
                     ),
-                  );
-                },
+                  ),
+                  title: Text(documents[index]['ClubName'] + " Club"),
+                  //subtitle: Text(documents[index]['Description']),
+
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ClubDetail(
+                              clubnamedata: documents[index]['ClubName'],
+                              clubpresidentdata: documents[index]
+                                  ['ClubPresident'],
+                              clubdescriptiondata: documents[index]
+                                  ['Description'],
+                              clubimagedata: documents[index]['clubImage'])),
+                    );
+                  },
+                ),
               ),
-            ),);
+            ),
+          );
         },
       ),
-
-
     );
   }
-
-
 }

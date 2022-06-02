@@ -37,8 +37,8 @@ class _ClubDetailState extends State<ClubDetail> {
               buildClubImage(),
               Column(
                 children: [
-                  Text("data"),
-                  Text("data"),
+                  Text("Canalp Cansever"),
+                  Text("Sezin Eliçalışkan"),
                   Text("data"),
                   Text("data"),
                   Text("data"),

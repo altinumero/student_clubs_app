@@ -39,7 +39,7 @@ class _ClubDetailState extends State<ClubDetail> {
                 children: [
                   Text("Canalp Cansever"),
                   Text("Sezin Eliçalışkan"),
-                  Text("data"),
+                  Text("Blabla"),
                   Text("data"),
                   Text("data"),
                   Text("data"),

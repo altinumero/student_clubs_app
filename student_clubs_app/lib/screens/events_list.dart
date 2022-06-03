@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:student_clubs_app/screens/profile.dart';
 
 import '../utils/colors.dart';
+import 'login.dart';
 
 class EventsList extends StatefulWidget {
   const EventsList({Key key}) : super(key: key);
@@ -22,7 +25,22 @@ class _EventsListState extends State<EventsList> {
           IconButton(
             icon: Icon(Icons.person),
             onPressed:
-                () {}, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+                () {
+                  FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                    if (firebaseUser == null) {
+
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Login()));
+                    } else {
+                      Navigator.push(context,
+                          MaterialPageRoute (builder: (context) => Profile()
+                          )
+                      );
+                    }
+                  });
+                }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
           ),
         ],
       ),

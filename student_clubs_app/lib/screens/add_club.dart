@@ -1,27 +1,78 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:student_clubs_app/screens/profile.dart';
+
 
 import '../utils/colors.dart';
+import 'login.dart';
 
-class AddClub extends StatelessWidget {
+class AddClub extends StatefulWidget {
   AddClub({Key key}) : super(key: key);
+
+  @override
+  State<AddClub> createState() => _AddClubState();
+}
+
+class _AddClubState extends State<AddClub> {
   TextEditingController clubNameController = TextEditingController();
+
   TextEditingController clubAdvisorController = TextEditingController();
+
   TextEditingController clubPresidentController = TextEditingController();
+
   TextEditingController clubVicePresidentController = TextEditingController();
+
   TextEditingController clubSecretaryController = TextEditingController();
+
   TextEditingController clubAccountantController = TextEditingController();
+
   TextEditingController clubMemberController = TextEditingController();
+
   TextEditingController clubAltMember1Controller = TextEditingController();
+
   TextEditingController clubAltMember2Controller = TextEditingController();
+
   String clubName;
+
   String clubAdvisor;
+
   String clubPresident;
+
   String clubVicePresident;
+
   String clubSecretary;
+
   String clubAccountant;
+
   String clubMember;
+
   String clubAltMember1;
+
   String clubAltMember2;
+
+ // CLUB DESCRIPTION VE CLUB STATUS FIELDALARI EKLENMESİ GEREK!!
+  File _pickedImage;
+
+  String urlForImage;
+
+
+
+
+
+  void _pickImage() async{
+    final pickedImageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _pickedImage = pickedImageFile ;
+    });
+
+  }
+
 
 
   @override
@@ -36,7 +87,22 @@ class AddClub extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.person),
             onPressed:
-                () {}, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+                () {
+                  FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                    if (firebaseUser == null) {
+
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Login()));
+                    } else {
+                      Navigator.push(context,
+                          MaterialPageRoute (builder: (context) => Profile()
+                          )
+                      );
+                    }
+                  });
+                }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
           ),
         ],
       ),
@@ -44,7 +110,16 @@ class AddClub extends StatelessWidget {
         padding: EdgeInsets.all(30),
         child: ListView(
           children: [
-            //burada image ekleme yeri olacak
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: _pickedImage != null ? FileImage(_pickedImage) : null,
+
+            ),
+            FlatButton.icon(
+                textColor: Colors.deepPurple,
+                onPressed: _pickImage, // gets executed whenever a user presses this button
+                icon: Icon(Icons.image),
+                label: Text('Pick Image')),//burada image ekleme yeri olacak
             buildClubNameField(),
             sizedBox(8),
             buildClubAdvisorField(),
@@ -71,9 +146,11 @@ class AddClub extends StatelessWidget {
       ),
     );
   }
+
   sizedBox(double i) {
     return SizedBox(height: i);
   }
+
   buildClubNameField() {
     return TextFormField(
       controller: clubNameController,
@@ -86,6 +163,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildClubAdvisorField() {
     return TextFormField(
       controller: clubAdvisorController,
@@ -98,6 +176,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildClubPresidentField() {
     return TextFormField(
       controller: clubPresidentController,
@@ -110,6 +189,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildClubVicePresidentField() {
     return TextFormField(
       controller: clubVicePresidentController,
@@ -122,6 +202,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildClubSecretaryNameField() {
     return TextFormField(
       controller: clubSecretaryController,
@@ -134,6 +215,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildClubAccountantField() {
     return TextFormField(
       controller: clubAccountantController,
@@ -146,6 +228,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildClubMemberField() {
     return TextFormField(
       controller: clubMemberController,
@@ -158,6 +241,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildClubAltMember1Field() {
     return TextFormField(
       controller: clubAltMember1Controller,
@@ -170,6 +254,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildClubAltMember2Field() {
     return TextFormField(
       controller: clubAltMember2Controller,
@@ -182,6 +267,7 @@ class AddClub extends StatelessWidget {
       validator: (value) {},
     );
   }
+
   buildElevatedButton(String text, Color color, VoidCallback onClicked) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -190,8 +276,55 @@ class AddClub extends StatelessWidget {
         primary: color,
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
-      onPressed: onClicked, //logout için veritabanı fonksiyonu
+      onPressed: (){
+
+        //uploadFile();
+        uploadFileandSendData();
+      } ,// resim database'e yükleniyor
+      //buraya başka methodlar gelcek klüp ismi vb database'e eklenmesi için
+
       child: Text(text),
     );
+
+
   }
-}
+  void uploadFileandSendData()async { // bu methodu submit butonunun içine koyulcak database club resmi yüklenmesi için
+    final ref = FirebaseStorage.instance.ref().child('clubImages').child('nyanImage.jpg');
+
+    await ref.putFile(_pickedImage).onComplete; // bu imageı database upload ediyo
+
+    final url = await ref.getDownloadURL(); // this is the url for downloading the image
+
+    final map = <String, String>{
+      "Advisor": clubAdvisorController.text,
+      "ClubName": clubNameController.text,
+      "ClubPresident": clubPresidentController.text,
+      "Descrption": "description",
+      "Status": "true",
+      "clubImage": url
+    };
+
+    Firestore.instance.collection("clubs").document(clubNameController.text).setData(map);
+
+
+
+    // bu urli yarattığımız kulubün imageUrl fieldina yapıştırmalıyız submit yaparken
+  }
+  /*sendData(){
+ uploadFile();
+    final map = <String, String>{
+      "Advisor": clubAdvisorController.text,
+      "ClubName": clubNameController.text,
+      "ClubPresident": clubPresidentController.text,
+    "Descrption": "description",
+    "Status": "true",
+    "clubImage": url
+    };
+
+ Firestore.instance.collection("clubs").document(clubNameController.text).setData(map);
+  }*/
+
+
+
+
+}// end

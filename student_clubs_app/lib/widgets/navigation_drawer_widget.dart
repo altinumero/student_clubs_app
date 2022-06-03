@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/add_club.dart';
 import 'package:student_clubs_app/screens/apply_for_club.dart';
@@ -14,110 +16,131 @@ import '../screens/clubs_list.dart';
 import '../screens/my_clubs.dart';
 import '../utils/colors.dart';
 
-class NavigationDrawerWidget extends StatelessWidget {
-  const NavigationDrawerWidget({Key key}) : super(key: key);
+class NavigationDrawerWidget extends StatefulWidget {
+   NavigationDrawerWidget({Key key}) : super(key: key);
 
   @override
+  State<NavigationDrawerWidget> createState() => _NavigationDrawerWidgetState();
+}
+
+class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget> {
+
+@override
+final FirebaseAuth _auth = FirebaseAuth.instance;
+var usertypedata;
+  @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: Material(
-        color: Appcolors.mainColor,
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          children: [
-            const SizedBox(
-              height: 16,
+
+
+
+    return FutureBuilder(
+        future: getCurrentUserType(),
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot)  {
+        return Drawer(
+          child: Material(
+            color: Appcolors.mainColor,
+            child: ListView(
+              physics: const BouncingScrollPhysics(),
+              children: [
+                const SizedBox(
+                  height: 16,
+                ),
+                buildMenuItem(
+                    text: "Clubs",
+                    icon: Icons.people_rounded,
+                    onClicked: () => selectedItem(context, 0)),
+                buildMenuItem(
+                    text: "Events",
+                    icon: Icons.event,
+                    onClicked: () => selectedItem(context, 1)),
+                const SizedBox(
+                  height: 8,
+                ),
+                const Divider(
+                  color: Appcolors.textColor,
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+
+                Visibility(
+
+                  visible: ( snapshot.data=="student" ),
+                  //EĞER  öğrenciyse
+                  child: buildMenuItem(
+
+                      text: "My Clubs",
+                      icon: Icons.favorite,
+                      onClicked: () => selectedItem(context, 2)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="student" ),
+                  child: buildMenuItem(
+                      text: "My Events",
+                      icon: Icons.event_available,
+                      onClicked: () => selectedItem(context, 3)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="president"),
+                  child: buildMenuItem(
+                      text: "Create Event",
+                      icon: Icons.create,
+                      onClicked: () => selectedItem(context, 4)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="president"),
+                  child: buildMenuItem(
+                      text: "Create Event Report",
+                      icon: Icons.create,
+                      onClicked: () => selectedItem(context, 5)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="president"),
+                  child: buildMenuItem(
+                      text: "Create Monthly Report",
+                      icon: Icons.create,
+                      onClicked: () => selectedItem(context, 6)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="advisor" || snapshot.data=="sks"),
+                  child: buildMenuItem(
+                      text: "Approve Event",
+                      icon: Icons.approval,
+                      onClicked: () => selectedItem(context, 7)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="sks"),
+                  child: buildMenuItem(
+                      text: "Add Club",
+                      icon: Icons.add,
+                      onClicked: () => selectedItem(context, 8)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="student" ),
+                  child: buildMenuItem(
+                      text: "Apply For Club",
+                      icon: Icons.create,
+                      onClicked: () => selectedItem(context, 9)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="advisor" || snapshot.data=="sks"),
+                  child: buildMenuItem(
+                      text: "Check Event Reports",
+                      icon: Icons.remove_red_eye_outlined,
+                      onClicked: () => selectedItem(context, 10)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="advisor" || snapshot.data=="sks" ),
+                  child: buildMenuItem(
+                      text: "Check Monthly Reports",
+                      icon: Icons.remove_red_eye_outlined,
+                      onClicked: () => selectedItem(context, 11)),
+                ),
+              ],
             ),
-            buildMenuItem(
-                text: "Clubs",
-                icon: Icons.people_rounded,
-                onClicked: () => selectedItem(context, 0)),
-            buildMenuItem(
-                text: "Events",
-                icon: Icons.event,
-                onClicked: () => selectedItem(context, 1)),
-            const SizedBox(
-              height: 8,
-            ),
-            const Divider(
-              color: Appcolors.textColor,
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Visibility(
-              visible: (6 + 6 == 12), //Eğer öğrenciyse
-              child: buildMenuItem(
-                  text: "My Clubs",
-                  icon: Icons.favorite,
-                  onClicked: () => selectedItem(context, 2)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "My Events",
-                  icon: Icons.event_available,
-                  onClicked: () => selectedItem(context, 3)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "Create Event",
-                  icon: Icons.create,
-                  onClicked: () => selectedItem(context, 4)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "Create Event Report",
-                  icon: Icons.create,
-                  onClicked: () => selectedItem(context, 5)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "Create Monthly Report",
-                  icon: Icons.create,
-                  onClicked: () => selectedItem(context, 6)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "Approve Event",
-                  icon: Icons.approval,
-                  onClicked: () => selectedItem(context, 7)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "Add Club",
-                  icon: Icons.add,
-                  onClicked: () => selectedItem(context, 8)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "Apply For Club",
-                  icon: Icons.create,
-                  onClicked: () => selectedItem(context, 9)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "Check Event Reports",
-                  icon: Icons.remove_red_eye_outlined,
-                  onClicked: () => selectedItem(context, 10)),
-            ),
-            Visibility(
-              visible: (6 + 6 == 12),
-              child: buildMenuItem(
-                  text: "Check Monthly Reports",
-                  icon: Icons.remove_red_eye_outlined,
-                  onClicked: () => selectedItem(context, 11)),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 
@@ -189,4 +212,43 @@ class NavigationDrawerWidget extends StatelessWidget {
         break;
     }
   }
-}
+
+    Future<String> getCurrentUserType() async {
+      final uid = await getCurrentUser();
+
+      DocumentSnapshot snapshot =
+      await Firestore.instance.collection('users').document(uid).get();
+      var userType = snapshot.data['userType'] ;//you can get any field value you want by writing the exact fieldName in the data[fieldName]
+      print(userType);
+      return userType;
+    }
+
+   Future<String> getCurrentUser() async {
+
+     FirebaseUser user = await _auth.currentUser();
+     return user.uid;
+   }
+
+   /*forUserType(){
+
+     return FutureBuilder<String>(
+         future: getCurrentUserType(),
+         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+           if (snapshot.hasData) {
+          print(snapshot.data);
+          setState(() {
+            usertypedata = snapshot.data;
+          });
+
+
+           } else {
+             print("no data");
+           }
+
+
+         }
+     );
+return (usertypedata);
+
+   }*/
+}//end

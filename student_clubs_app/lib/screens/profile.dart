@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:student_clubs_app/screens/login.dart';
 import 'package:student_clubs_app/screens/my_clubs.dart';
 import 'package:student_clubs_app/screens/my_events.dart';
 import 'package:student_clubs_app/utils/colors.dart';
@@ -11,9 +14,15 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       backgroundColor: Appcolors.backgroundColor,
       appBar: AppBar(
         backgroundColor: Appcolors.mainColor,
@@ -23,48 +32,92 @@ class _ProfileState extends State<Profile> {
           IconButton(
             icon: const Icon(Icons.person),
             onPressed:
-                () {}, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+                () {
+                  FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                    if (firebaseUser == null) {
+
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Login()));
+
+                    } else {
+                      Navigator.push(context,
+                          MaterialPageRoute (builder: (context) => Profile()
+                          )
+
+                      );
+                      Navigator.pop(context);
+                    }
+                  });
+                }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
           ),
         ],
       ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          sizedBox(24),
-          buildProfileImage(), //veritabanından kullanıcı gidecek
-          sizedBox(16),
-          buildName(), //veritabanından kullanıcı yolluycaz.
-          sizedBox(16),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body:  ListView(
+            physics: const BouncingScrollPhysics(),
             children: [
-              buildElevatedButton("My Clubs", () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => MyClubs()));
-              }),
-              buildElevatedButton("My Events", () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => MyEvents()));
-              })
+              sizedBox(24),
+              buildProfileImage(), //veritabanından kullanıcı gidecek
+              sizedBox(16),
+              buildName(), //veritabanından kullanıcı yolluycaz.
+              sizedBox(16),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  buildElevatedButton("My Clubs", () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => MyClubs()));
+                  }),
+                  buildElevatedButton("My Events", () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => MyEvents()));
+                  })
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+
       bottomNavigationBar: Container(
         child: buildElevatedButton("Logout", () {}),
       ),
     );
   }
 
-  buildName() {
+  buildName()  {
+    CollectionReference users = Firestore.instance.collection('users');
+    var currentuserid =getCurrentUser();
+
     return Column(
       children: [
-        Text("İsim", //veri tabanından isim
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-        Text(
-          "Mail", //veri tabanından mail
-          style: TextStyle(color: Appcolors.textColor),
-        )
+        FutureBuilder<String>(
+            future: getCurrentUserName(),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasData) {
+
+                return Text(snapshot.data, //veri tabanından isim
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+              }
+              else {
+                return Text("Loading user data...");
+              }
+
+            }
+        ),
+        FutureBuilder<String>(
+            future: getCurrentUserEmail(),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasData) {
+                return Text("email:" + snapshot.data , //veri tabanından mail
+                    style: TextStyle(color: Appcolors.textColor));
+              }
+              else {
+                return Text("Loading user data...");
+              }
+
+            }
+        ),
+
       ],
     );
   }
@@ -77,7 +130,7 @@ class _ProfileState extends State<Profile> {
         primary: Appcolors.mainColor,
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
-      onPressed: onClicked, //logout için veritabanı fonksiyonu
+      onPressed: _signOut, //logout için veritabanı fonksiyonu
       child: Text(text),
     );
   }
@@ -87,19 +140,72 @@ class _ProfileState extends State<Profile> {
   }
 
   buildProfileImage() {
-    return Center(
-      child: ClipOval(
-        child: Material(
-          color: Colors.transparent,
-          child: Ink.image(
-            image: NetworkImage(//veri tabanından resim
-                "https://cdn.pixabay.com/photo/2022/05/09/17/08/mute-swan-7185076_1280.jpg"),
-            fit: BoxFit.cover,
-            width: 128,
-            height: 128,
-          ),
+
+    return Column(
+      children: [
+        FutureBuilder<String>(
+            future: getUsersPicture(),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasData) {
+                return Center(
+                  child: ClipOval(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Ink.image(
+                        image: NetworkImage(//veri tabanından resim
+                            snapshot.data),
+                        fit: BoxFit.cover,
+                        width: 128,
+                        height: 128,
+                      ),
+                    ),
+                  ),
+                );
+              }
+              else {
+                return Text("Loading user data...");
+              }
+
+            }
         ),
-      ),
+
+      ],
     );
   }
+
+  Future<void> _signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pop(context);
+  }
+
+
+  Future<String> getCurrentUserEmail() async {
+    FirebaseUser user = await _auth.currentUser();
+    final String email = user.email.toString();
+    //  print(email);
+    return email;
+  }
+  Future<String> getCurrentUser() async {
+    FirebaseUser user = await _auth.currentUser();
+    return user.uid;
+  }
+
+  Future<String> getCurrentUserName() async {
+    final uid = await getCurrentUser();
+
+    DocumentSnapshot snapshot =
+    await Firestore.instance.collection('users').document(uid).get();
+    var username = snapshot.data['username'] ;//you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    return username;
+  }
+
+  Future<String> getUsersPicture() async {
+    final uid = await getCurrentUser();
+
+    DocumentSnapshot snapshot =
+    await Firestore.instance.collection('users').document(uid).get();
+    var userImage = snapshot.data['userImage'] ;//you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    return userImage;
+  }
+
 }

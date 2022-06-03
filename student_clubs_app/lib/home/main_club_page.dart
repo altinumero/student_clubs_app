@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/login.dart';
 import 'package:student_clubs_app/screens/profile.dart';
@@ -14,6 +15,7 @@ class MainClubPage extends StatefulWidget {
 
 class _MainClubPageState extends State<MainClubPage> {
   @override
+  bool _isLoggedin = false;
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -24,14 +26,29 @@ class _MainClubPageState extends State<MainClubPage> {
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
-              if (3 + 3 == 6) {
+              FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                if (firebaseUser == null) {
+
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Login()));
+                } else {
+                  Navigator.push(context,
+                      MaterialPageRoute (builder: (context) => Profile()
+                      )
+                  );
+                }
+              });
+              /*if (_isLoggedin==true) {
                 //isLogin will add
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) => const Profile()));
-              } else {
+              } else if (_isLoggedin==false){
+
                 Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => Login()));
-              }
+                    .push(MaterialPageRoute(builder: (context) => Login(logindata: _isLoggedin)));
+              }*/
             },
           ),
         ],
@@ -47,7 +64,7 @@ class _MainClubPageState extends State<MainClubPage> {
         ],
       ),
       backgroundColor: Appcolors.backgroundColor,
-      drawer: const NavigationDrawerWidget(),
+      drawer:  NavigationDrawerWidget(),
     );
   }
 }

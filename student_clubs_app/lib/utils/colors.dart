@@ -7,7 +7,7 @@ class Appcolors {
   static const warningColor = Color(0xFFFF0000);
   static const buttonBackgroundColor = Color(0xFFf7f6f4);
   static const joinColor = Color(0xFF66FF00);
-  static const titleColor = Color(0xFF5c524f);
+  static const darkBlueColor = Color(0xFF00008B);
   static const mainBlackColor = Color(0xFF332d2b);
   static const yellowColor = Color(0xFFffd379);
 }

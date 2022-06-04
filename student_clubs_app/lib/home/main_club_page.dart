@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:student_clubs_app/screens/clubs_list.dart';
+import 'package:student_clubs_app/screens/events_list.dart';
 import 'package:student_clubs_app/screens/login.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 import 'package:student_clubs_app/utils/colors.dart';
@@ -28,16 +31,11 @@ class _MainClubPageState extends State<MainClubPage> {
             onPressed: () {
               FirebaseAuth.instance.currentUser().then((firebaseUser) {
                 if (firebaseUser == null) {
-
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Login()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Login()));
                 } else {
                   Navigator.push(context,
-                      MaterialPageRoute (builder: (context) => Profile()
-                      )
-                  );
+                      MaterialPageRoute(builder: (context) => Profile()));
                 }
               });
               /*if (_isLoggedin==true) {
@@ -60,11 +58,56 @@ class _MainClubPageState extends State<MainClubPage> {
               image: AssetImage("assets/logo.png"),
             ),
             padding: const EdgeInsets.all(15),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                height: 500,
+                width: 200,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ClubsList()));
+                  },
+                  child: Card(
+                    color: Appcolors.darkBlueColor,
+                    elevation: 2,
+                    child: Center(
+                        child: Text(
+                      "Clubs",
+                      style:
+                          TextStyle(fontSize: 48, color: Appcolors.textColor),
+                    )),
+                  ),
+                ),
+              ),
+              Container(
+                height: 500,
+                width: 200,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => EventsList()));
+                  },
+                  child: Card(
+                      color: Appcolors.darkBlueColor,
+                      elevation: 2,
+                      child: Center(
+                        child: Text(
+                          "Events",
+                          style:
+                              TextStyle(fontSize: 48, color: Appcolors.textColor),
+                        ),
+                      )),
+                ),
+              )
+            ],
           )
         ],
       ),
       backgroundColor: Appcolors.backgroundColor,
-      drawer:  NavigationDrawerWidget(),
+      drawer: NavigationDrawerWidget(),
     );
   }
 }

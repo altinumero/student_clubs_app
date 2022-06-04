@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
-
 import '../utils/colors.dart';
 import 'login.dart';
 
@@ -37,43 +36,23 @@ class _AddClubState extends State<AddClub> {
 
   TextEditingController clubAltMember2Controller = TextEditingController();
 
-  String clubName;
+  TextEditingController clubDescriptionController = TextEditingController();
 
-  String clubAdvisor;
+  int status = 0;
 
-  String clubPresident;
-
-  String clubVicePresident;
-
-  String clubSecretary;
-
-  String clubAccountant;
-
-  String clubMember;
-
-  String clubAltMember1;
-
-  String clubAltMember2;
-
- // CLUB DESCRIPTION VE CLUB STATUS FIELDALARI EKLENMESİ GEREK!!
+  // CLUB DESCRIPTION VE CLUB STATUS FIELDALARI EKLENMESİ GEREK!!
   File _pickedImage;
 
   String urlForImage;
 
-
-
-
-
-  void _pickImage() async{
-    final pickedImageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+  void _pickImage() async {
+    final pickedImageFile =
+        await ImagePicker.pickImage(source: ImageSource.gallery);
 
     setState(() {
-      _pickedImage = pickedImageFile ;
+      _pickedImage = pickedImageFile;
     });
-
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,23 +65,17 @@ class _AddClubState extends State<AddClub> {
         actions: [
           IconButton(
             icon: Icon(Icons.person),
-            onPressed:
-                () {
-                  FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                    if (firebaseUser == null) {
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Login()));
-                    } else {
-                      Navigator.push(context,
-                          MaterialPageRoute (builder: (context) => Profile()
-                          )
-                      );
-                    }
-                  });
-                }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            onPressed: () {
+              FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                if (firebaseUser == null) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Login()));
+                } else {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Profile()));
+                }
+              });
+            }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
           ),
         ],
       ),
@@ -112,14 +85,15 @@ class _AddClubState extends State<AddClub> {
           children: [
             CircleAvatar(
               radius: 40,
-              backgroundImage: _pickedImage != null ? FileImage(_pickedImage) : null,
-
+              backgroundImage:
+                  _pickedImage != null ? FileImage(_pickedImage) : null,
             ),
             FlatButton.icon(
                 textColor: Colors.deepPurple,
-                onPressed: _pickImage, // gets executed whenever a user presses this button
+                onPressed:
+                    _pickImage, // gets executed whenever a user presses this button
                 icon: Icon(Icons.image),
-                label: Text('Pick Image')),//burada image ekleme yeri olacak
+                label: Text('Pick Image')), //burada image ekleme yeri olacak
             buildClubNameField(),
             sizedBox(8),
             buildClubAdvisorField(),
@@ -138,10 +112,28 @@ class _AddClubState extends State<AddClub> {
             sizedBox(8),
             buildClubAltMember2Field(),
             sizedBox(8),
-            buildElevatedButton("Add Club", Appcolors.joinColor, () { })
+            buildClubDescriptionField(),
+            sizedBox(8),
+            Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RadioListTile(
+                      value: 0,
+                      groupValue: status,
+                      title: Text("Passive"),
+                      onChanged: (value) => setState(() => status = 0)),
+                  RadioListTile(
+                      value: 1,
+                      groupValue: status,
+                      title: Text("Active"),
+                      onChanged: (value) => setState(() => status = 1))
+                ],
+              ),
+            ),
+
+            buildElevatedButton("Add Club", Appcolors.joinColor, () {})
           ],
-
-
         ),
       ),
     );
@@ -268,6 +260,19 @@ class _AddClubState extends State<AddClub> {
     );
   }
 
+  buildClubDescriptionField() {
+    return TextFormField(
+      controller: clubDescriptionController,
+      decoration: InputDecoration(
+          hintText: "Club Description",
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          prefixIcon: Icon(Icons.drive_file_rename_outline)),
+      validator: (value) {},
+    );
+  }
+
   buildElevatedButton(String text, Color color, VoidCallback onClicked) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -276,37 +281,47 @@ class _AddClubState extends State<AddClub> {
         primary: color,
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
-      onPressed: (){
-
+      onPressed: () {
         //uploadFile();
         uploadFileandSendData();
-      } ,// resim database'e yükleniyor
+      }, // resim database'e yükleniyor
       //buraya başka methodlar gelcek klüp ismi vb database'e eklenmesi için
 
       child: Text(text),
     );
-
-
   }
-  void uploadFileandSendData()async { // bu methodu submit butonunun içine koyulcak database club resmi yüklenmesi için
-    final ref = FirebaseStorage.instance.ref().child('clubImages').child('nyanImage.jpg');
 
-    await ref.putFile(_pickedImage).onComplete; // bu imageı database upload ediyo
+  void uploadFileandSendData() async {
+    String statuss="false";
+    if(status==1){
+      statuss="true";
+    }
+    // bu methodu submit butonunun içine koyulcak database club resmi yüklenmesi için
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('clubImages')
+        .child('nyanImage.jpg');
 
-    final url = await ref.getDownloadURL(); // this is the url for downloading the image
+    await ref
+        .putFile(_pickedImage)
+        .onComplete; // bu imageı database upload ediyo
+
+    final url =
+        await ref.getDownloadURL(); // this is the url for downloading the image
 
     final map = <String, String>{
       "Advisor": clubAdvisorController.text,
       "ClubName": clubNameController.text,
       "ClubPresident": clubPresidentController.text,
-      "Descrption": "description",
-      "Status": "true",
+      "Description": clubDescriptionController.text,
+      "Status": statuss,
       "clubImage": url
     };
 
-    Firestore.instance.collection("clubs").document(clubNameController.text).setData(map);
-
-
+    Firestore.instance
+        .collection("clubs")
+        .document(clubNameController.text)
+        .setData(map);
 
     // bu urli yarattığımız kulubün imageUrl fieldina yapıştırmalıyız submit yaparken
   }
@@ -324,7 +339,4 @@ class _AddClubState extends State<AddClub> {
  Firestore.instance.collection("clubs").document(clubNameController.text).setData(map);
   }*/
 
-
-
-
-}// end
+} // end

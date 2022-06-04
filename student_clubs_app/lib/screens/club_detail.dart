@@ -49,23 +49,17 @@ class _ClubDetailState extends State<ClubDetail> {
         actions: [
           IconButton(
             icon: Icon(Icons.person),
-            onPressed:
-                () {
-                  FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                    if (firebaseUser == null) {
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Login()));
-                    } else {
-                      Navigator.push(context,
-                          MaterialPageRoute (builder: (context) => Profile()
-                          )
-                      );
-                    }
-                  });
-                }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            onPressed: () {
+              FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                if (firebaseUser == null) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Login()));
+                } else {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Profile()));
+                }
+              });
+            }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
           ),
         ],
       ),
@@ -74,48 +68,69 @@ class _ClubDetailState extends State<ClubDetail> {
         children: [
           sizedBox(24),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               buildClubImage(clubimagedata),
-              Column(
-                children: [
-                  Text("Club President : ${clubpresidentdata}"),
-                  Text("Vise President : "),
-                  Text("Sayman: "),
-                  Text("Yazman: "),
-                  Text("Asil Üye: "),
-                  Text("Yedek Üye: "),
-                  Text("Yedek Üye: "),
-                ],
+              SizedBox(width: 10),
+              Container(
+                width: 250,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Appcolors.darkBlueColor)),
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text("Club President : ${clubpresidentdata}",
+                          style: TextStyle(color: Appcolors.textColor)),
+                      Text("Vise President : ",
+                          style: TextStyle(color: Appcolors.textColor)),
+                      Text("Sayman: ",
+                          style: TextStyle(color: Appcolors.textColor)),
+                      Text("Yazman: ",
+                          style: TextStyle(color: Appcolors.textColor)),
+                      Text("Asil Üye: ",
+                          style: TextStyle(color: Appcolors.textColor)),
+                      Text("Yedek Üye: ",
+                          style: TextStyle(color: Appcolors.textColor)),
+                      Text("Yedek Üye: ",
+                          style: TextStyle(color: Appcolors.textColor)),
+                    ],
+                  ),
+                ),
               ),
-              SizedBox(
-                width: 6,
-              )
             ],
           ),
           sizedBox(16),
           Container(
-            decoration: BoxDecoration(border: Border.all()),
+            decoration: BoxDecoration(
+                border: Border.all(color: Appcolors.darkBlueColor)),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text("Club Description : ${clubdescriptiondata}"),
+              child: Text(
+                "Club Description : ${clubdescriptiondata}",
+                style: TextStyle(color: Appcolors.textColor),
+              ),
             ),
           ),
           sizedBox(16),
-          Visibility(
-              visible: (3 + 3 == 6),
-              child: Container(
-                child: buildElevatedButton(
-                    "Join Club", Appcolors.joinColor, () {}),
-              )),
-          Visibility(
-              visible: (3 + 3 == 6),
-              child: Container(
-                child: buildElevatedButton(
-                    "Leave Club", Appcolors.warningColor, () {}),
-              )),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Visibility(
+                  visible: (3 + 3 == 6),
+                  child: Container(
+                    child: buildElevatedButton(
+                        "Join Club", Appcolors.joinColor, () {}),
+                  )),
+              Visibility(
+                  visible: (3 + 3 == 6),
+                  child: Container(
+                    child: buildElevatedButton(
+                        "Leave Club", Appcolors.warningColor, () {}),
+                  )),
+            ],
+          ),
           Divider(
-            color: Appcolors.textColor,
+            color: Appcolors.darkBlueColor,
           ),
           sizedBox(4),
           buildName(clubnamedata),
@@ -141,10 +156,13 @@ class _ClubDetailState extends State<ClubDetail> {
     return Column(
       children: [
         Text(" ${clubnamedata} Club", //veri tabanından isim
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+                color: Appcolors.textColor)),
         sizedBox(4),
         Divider(
-          color: Appcolors.textColor,
+          color: Appcolors.darkBlueColor,
         ),
         sizedBox(4),
         Text(

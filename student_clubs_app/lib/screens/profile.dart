@@ -79,7 +79,7 @@ class _ProfileState extends State<Profile> {
           ),
 
       bottomNavigationBar: Container(
-        child: buildElevatedButton("Logout", () {}),
+        child: buildElevatedButton("Logout", () {_signOut();}),
       ),
     );
   }
@@ -130,7 +130,7 @@ class _ProfileState extends State<Profile> {
         primary: Appcolors.mainColor,
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
-      onPressed: _signOut, //logout için veritabanı fonksiyonu
+      onPressed: onClicked,
       child: Text(text),
     );
   }

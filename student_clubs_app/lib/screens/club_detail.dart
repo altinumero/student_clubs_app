@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/event_detail.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
+import '../home/main_club_page.dart';
 import '../utils/colors.dart';
 import 'login.dart';
 
@@ -11,12 +12,28 @@ class ClubDetail extends StatefulWidget {
   ClubDetail(
       {key,
       this.clubnamedata,
+      this.clubadvisordata,
       this.clubpresidentdata,
+      this.clubvicepresidentdata,
+      this.clubsecretarydata,
+      this.clubaccountantdata,
+      this.clubmemberdata,
+      this.clubaltmember1data,
+      this.clubaltmember2data,
+      this.statusdata,
       this.clubdescriptiondata,
       this.clubimagedata})
       : super(key: key);
   final clubnamedata;
+  final clubadvisordata;
   final clubpresidentdata;
+  final clubvicepresidentdata;
+  final clubsecretarydata;
+  final clubaccountantdata;
+  final clubmemberdata;
+  final clubaltmember1data;
+  final clubaltmember2data;
+  final statusdata;
   final clubdescriptiondata;
   final clubimagedata;
 
@@ -30,17 +47,19 @@ class _ClubDetailState extends State<ClubDetail> {
   @override
   void initState() {
     super.initState();
-
-    final clubnamedata = widget.clubnamedata;
-    final clubpresidentdata = widget.clubpresidentdata;
-    final clubdescriptiondata = widget.clubdescriptiondata;
-    final clubimagedata = widget.clubimagedata;
-    //final String ClubName = clubdata.document['ClubName'];
   }
 
   Widget build(BuildContext context) {
     final clubnamedata = widget.clubnamedata;
     final clubpresidentdata = widget.clubpresidentdata;
+    final clubadvisordata = widget.clubadvisordata;
+    final clubvicepresidentdata = widget.clubvicepresidentdata;
+    final clubsecretarydata = widget.clubsecretarydata;
+    final clubaccountantdata = widget.clubaccountantdata;
+    final clubmemberdata = widget.clubmemberdata;
+    final clubaltmember1data = widget.clubaltmember1data;
+    final clubaltmember2data = widget.clubaltmember2data;
+    final statusdata = widget.statusdata;
     final clubdescriptiondata = widget.clubdescriptiondata;
     final clubimagedata = widget.clubimagedata;
     return Scaffold(
@@ -50,6 +69,13 @@ class _ClubDetailState extends State<ClubDetail> {
         centerTitle: true,
         title: Text("Club Page "),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MainClubPage()));
+            },
+          ),
           IconButton(
             icon: Icon(Icons.person),
             onPressed: () {
@@ -62,7 +88,7 @@ class _ClubDetailState extends State<ClubDetail> {
                       MaterialPageRoute(builder: (context) => Profile()));
                 }
               });
-            }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            },
           ),
         ],
       ),
@@ -102,19 +128,23 @@ class _ClubDetailState extends State<ClubDetail> {
                   padding: EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Text("Club President : ${clubpresidentdata}",
+                      Text("President : ${clubpresidentdata}",
                           style: TextStyle(color: Appcolors.textColor)),
-                      Text("Vise President : ",
+                      Text("Advisor:${clubadvisordata} ",
                           style: TextStyle(color: Appcolors.textColor)),
-                      Text("Sayman: ",
+                      Text("Vice President : ${clubvicepresidentdata}",
                           style: TextStyle(color: Appcolors.textColor)),
-                      Text("Yazman: ",
+                      Text("Accountant: ${clubaccountantdata}",
                           style: TextStyle(color: Appcolors.textColor)),
-                      Text("Asil Üye: ",
+                      Text("Secretary:${clubsecretarydata} ",
                           style: TextStyle(color: Appcolors.textColor)),
-                      Text("Yedek Üye: ",
+                      Text("Member: ${clubmemberdata}",
                           style: TextStyle(color: Appcolors.textColor)),
-                      Text("Yedek Üye: ",
+                      Text("Alternate Member: ${clubaltmember1data}",
+                          style: TextStyle(color: Appcolors.textColor)),
+                      Text("Alternate Member 2:${clubaltmember2data} ",
+                          style: TextStyle(color: Appcolors.textColor)),
+                      Text("Status :${statusdata} ",
                           style: TextStyle(color: Appcolors.textColor)),
                     ],
                   ),
@@ -130,7 +160,7 @@ class _ClubDetailState extends State<ClubDetail> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Club Description : ${clubdescriptiondata} AJKSDHAJSKDHSAJKDHJKASDHJAKDJAJKADHASDHSHKDHASDAJHKDAKDAJDAKADAKSJSKADJASKDHASJKDHAS",
+                "Club Description : ${clubdescriptiondata} ",
                 style: TextStyle(color: Appcolors.textColor),
               ),
             ),
@@ -145,7 +175,8 @@ class _ClubDetailState extends State<ClubDetail> {
                     Visibility(
                         visible: ((snapshot.data == "student" ||
                                 snapshot.data == "president") &&
-                            3 + 3 == 6),
+                            3 + 3 == 6 &&
+                            statusdata=="Active"),
                         child: Container(
                           child: buildElevatedButton(
                               "Join Club", Appcolors.joinColor, () {}),
@@ -153,7 +184,8 @@ class _ClubDetailState extends State<ClubDetail> {
                     Visibility(
                         visible: ((snapshot.data == "student" ||
                                 snapshot.data == "president") &&
-                            3 + 3 == 7),
+                            3 + 3 == 7 &&
+                            statusdata=="Active"),
                         child: Container(
                           child: buildElevatedButton(
                               "Leave Club", Appcolors.warningColor, () {}),
@@ -188,7 +220,7 @@ class _ClubDetailState extends State<ClubDetail> {
     return Column(
       children: [
         Text(
-          "${clubnamedata}'s Events", //veri tabanından mail
+          "${clubnamedata}'s Events",
           style: TextStyle(color: Appcolors.darkBlueColor),
         )
       ],
@@ -244,7 +276,7 @@ class _ClubDetailState extends State<ClubDetail> {
         primary: color,
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
-      onPressed: onClicked, //logout için veritabanı fonksiyonu
+      onPressed: onClicked,
       child: Text(text),
     );
   }

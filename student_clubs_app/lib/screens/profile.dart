@@ -15,15 +15,11 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       backgroundColor: Appcolors.backgroundColor,
       appBar: AppBar(
         backgroundColor: Appcolors.mainColor,
@@ -32,69 +28,62 @@ class _ProfileState extends State<Profile> {
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
-            onPressed:
-                () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>MainClubPage()));
-            }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MainClubPage()));
+            },
           ),
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed:
-                () {
-                  FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                    if (firebaseUser == null) {
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Login()));
-
-                    } else {
-                      Navigator.push(context,
-                          MaterialPageRoute (builder: (context) => Profile()
-                          )
-
-                      );
-                      Navigator.pop(context);
-                    }
-                  });
-                }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            onPressed: () {
+              FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                if (firebaseUser == null) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Login()));
+                } else {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Profile()));
+                  Navigator.pop(context);
+                }
+              });
+            }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
           ),
         ],
       ),
-      body:  ListView(
-            physics: const BouncingScrollPhysics(),
+      body: ListView(
+        physics: const BouncingScrollPhysics(),
+        children: [
+          sizedBox(24),
+          buildProfileImage(), //veritabanından kullanıcı gidecek
+          sizedBox(16),
+          buildName(), //veritabanından kullanıcı yolluycaz.
+          sizedBox(16),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              sizedBox(24),
-              buildProfileImage(), //veritabanından kullanıcı gidecek
-              sizedBox(16),
-              buildName(), //veritabanından kullanıcı yolluycaz.
-              sizedBox(16),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  buildElevatedButton("My Clubs", () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => MyClubs()));
-                  }),
-                  buildElevatedButton("My Events", () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => MyEvents()));
-                  })
-                ],
-              ),
+              buildElevatedButton("My Clubs", () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => MyClubs()));
+              }),
+              buildElevatedButton("My Events", () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => MyEvents()));
+              })
             ],
           ),
-
+        ],
+      ),
       bottomNavigationBar: Container(
-        child: buildElevatedButton("Logout", () {_signOut();}),
+        child: buildElevatedButton("Logout", () {
+          _signOut();
+        }),
       ),
     );
   }
 
-  buildName()  {
+  buildName() {
     CollectionReference users = Firestore.instance.collection('users');
-    var currentuserid =getCurrentUser();
+    var currentuserid = getCurrentUser();
 
     return Column(
       children: [
@@ -102,31 +91,24 @@ class _ProfileState extends State<Profile> {
             future: getCurrentUserName(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if (snapshot.hasData) {
-
                 return Text(snapshot.data, //veri tabanından isim
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
-              }
-              else {
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+              } else {
                 return Text("Loading user data...");
               }
-
-            }
-        ),
+            }),
         sizedBox(16),
         FutureBuilder<String>(
             future: getCurrentUserEmail(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data , //veri tabanından mail
-                    style: TextStyle(color: Appcolors.textColor,fontSize: 24));
-              }
-              else {
+                return Text(snapshot.data, //veri tabanından mail
+                    style: TextStyle(color: Appcolors.textColor, fontSize: 24));
+              } else {
                 return Text("Loading user data...");
               }
-
-            }
-        ),
-
+            }),
       ],
     );
   }
@@ -140,7 +122,10 @@ class _ProfileState extends State<Profile> {
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
       onPressed: onClicked,
-      child: Text(text,style: TextStyle(fontSize: 18),),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 18),
+      ),
     );
   }
 
@@ -149,7 +134,6 @@ class _ProfileState extends State<Profile> {
   }
 
   buildProfileImage() {
-
     return Column(
       children: [
         FutureBuilder<String>(
@@ -170,14 +154,10 @@ class _ProfileState extends State<Profile> {
                     ),
                   ),
                 );
-              }
-              else {
+              } else {
                 return Text("Loading user data...");
               }
-
-            }
-        ),
-
+            }),
       ],
     );
   }
@@ -187,13 +167,13 @@ class _ProfileState extends State<Profile> {
     Navigator.pop(context);
   }
 
-
   Future<String> getCurrentUserEmail() async {
     FirebaseUser user = await _auth.currentUser();
     final String email = user.email.toString();
     //  print(email);
     return email;
   }
+
   Future<String> getCurrentUser() async {
     FirebaseUser user = await _auth.currentUser();
     return user.uid;
@@ -203,8 +183,9 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-    await Firestore.instance.collection('users').document(uid).get();
-    var username = snapshot.data['username'] ;//you can get any field value you want by writing the exact fieldName in the data[fieldName]
+        await Firestore.instance.collection('users').document(uid).get();
+    var username = snapshot.data[
+        'username']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
     return username;
   }
 
@@ -212,9 +193,9 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-    await Firestore.instance.collection('users').document(uid).get();
-    var userImage = snapshot.data['userImage'] ;//you can get any field value you want by writing the exact fieldName in the data[fieldName]
+        await Firestore.instance.collection('users').document(uid).get();
+    var userImage = snapshot.data[
+        'userImage']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
     return userImage;
   }
-
 }

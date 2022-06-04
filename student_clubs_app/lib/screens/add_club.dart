@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
+import '../home/main_club_page.dart';
 import '../utils/colors.dart';
 import 'login.dart';
 
@@ -64,6 +65,13 @@ class _AddClubState extends State<AddClub> {
         title: Text("Add Club"),
         actions: [
           IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MainClubPage()));
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.person),
             onPressed: () {
               FirebaseAuth.instance.currentUser().then((firebaseUser) {
@@ -75,7 +83,7 @@ class _AddClubState extends State<AddClub> {
                       MaterialPageRoute(builder: (context) => Profile()));
                 }
               });
-            }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            },
           ),
         ],
       ),
@@ -90,10 +98,9 @@ class _AddClubState extends State<AddClub> {
             ),
             FlatButton.icon(
                 textColor: Colors.deepPurple,
-                onPressed:
-                    _pickImage, // gets executed whenever a user presses this button
+                onPressed: _pickImage,
                 icon: Icon(Icons.image),
-                label: Text('Pick Image')), //burada image ekleme yeri olacak
+                label: Text('Pick Image')),
             buildClubNameField(),
             sizedBox(8),
             buildClubAdvisorField(),
@@ -131,7 +138,6 @@ class _AddClubState extends State<AddClub> {
                 ],
               ),
             ),
-
             buildElevatedButton("Add Club", Appcolors.joinColor, () {})
           ],
         ),
@@ -292,9 +298,9 @@ class _AddClubState extends State<AddClub> {
   }
 
   void uploadFileandSendData() async {
-    String statuss="false";
-    if(status==1){
-      statuss="true";
+    String statuss = "Passive";
+    if (status == 1) {
+      statuss = "Active";
     }
     // bu methodu submit butonunun içine koyulcak database club resmi yüklenmesi için
     final ref = FirebaseStorage.instance
@@ -313,30 +319,20 @@ class _AddClubState extends State<AddClub> {
       "Advisor": clubAdvisorController.text,
       "ClubName": clubNameController.text,
       "ClubPresident": clubPresidentController.text,
+      "VicePresident": clubVicePresidentController.text,
+      "Secretary": clubSecretaryController.text,
+      "Accountant": clubAccountantController.text,
+      "ClubMember": clubMemberController.text,
+      "ClubAltMember": clubAltMember1Controller.text,
+      "ClubAltMember2": clubAltMember2Controller.text,
       "Description": clubDescriptionController.text,
       "Status": statuss,
       "clubImage": url
     };
-
     Firestore.instance
         .collection("clubs")
         .document(clubNameController.text)
         .setData(map);
-
     // bu urli yarattığımız kulubün imageUrl fieldina yapıştırmalıyız submit yaparken
   }
-  /*sendData(){
- uploadFile();
-    final map = <String, String>{
-      "Advisor": clubAdvisorController.text,
-      "ClubName": clubNameController.text,
-      "ClubPresident": clubPresidentController.text,
-    "Descrption": "description",
-    "Status": "true",
-    "clubImage": url
-    };
-
- Firestore.instance.collection("clubs").document(clubNameController.text).setData(map);
-  }*/
-
 } // end

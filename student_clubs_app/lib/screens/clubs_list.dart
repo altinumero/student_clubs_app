@@ -5,6 +5,7 @@ import 'package:student_clubs_app/screens/club_detail.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 import 'package:student_clubs_app/utils/colors.dart';
 
+import '../home/main_club_page.dart';
 import 'login.dart';
 
 class ClubsList extends StatelessWidget {
@@ -18,24 +19,25 @@ class ClubsList extends StatelessWidget {
         title: Text("Clubs List"),
         actions: [
           IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MainClubPage()));
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.person),
-            onPressed:
-                () {
-                  FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                    if (firebaseUser == null) {
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Login()));
-                    } else {
-                      Navigator.push(context,
-                          MaterialPageRoute (builder: (context) => Profile()
-                          )
-                      );
-                    }
-                  });
-                }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            onPressed: () {
+              FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                if (firebaseUser == null) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Login()));
+                } else {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Profile()));
+                }
+              });
+            },
           ),
         ],
       ),
@@ -77,9 +79,7 @@ class ClubsList extends StatelessWidget {
                           backgroundColor: Colors.transparent),
                     ),
                   ),
-                  title: Text(documents[index]['ClubName'] + " Club"),
-                  //subtitle: Text(documents[index]['Description']),
-
+                  title: Text(documents[index]['ClubName']),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -88,6 +88,18 @@ class ClubsList extends StatelessWidget {
                               clubnamedata: documents[index]['ClubName'],
                               clubpresidentdata: documents[index]
                                   ['ClubPresident'],
+                              clubadvisordata: documents[index]['Advisor'],
+                              clubvicepresidentdata: documents[index]
+                                  ['VicePresident'],
+                              clubsecretarydata: documents[index]['Secretary'],
+                              clubaccountantdata: documents[index]
+                                  ['Accountant'],
+                              clubmemberdata: documents[index]['ClubMember'],
+                              clubaltmember1data: documents[index]
+                                  ['ClubAltMember'],
+                              clubaltmember2data: documents[index]
+                                  ['ClubAltMember2'],
+                              statusdata: documents[index]['Status'],
                               clubdescriptiondata: documents[index]
                                   ['Description'],
                               clubimagedata: documents[index]['clubImage'])),

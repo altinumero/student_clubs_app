@@ -4,6 +4,7 @@ import 'package:student_clubs_app/screens/profile.dart';
 import 'package:student_clubs_app/screens/reset_password.dart';
 import 'package:email_validator/email_validator.dart';
 
+import '../home/main_club_page.dart';
 import '../utils/colors.dart';
 
 class Login extends StatefulWidget {
@@ -30,24 +31,24 @@ class _LoginState extends State<Login> {
         print(email);
         print(password);
 
-        final FirebaseUser user = (await FirebaseAuth.instance
-            .signInWithEmailAndPassword(
+        final FirebaseUser user =
+            (await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
-        )).user;
+        ))
+                .user;
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => Profile()));
       }
 
       // use the values to send login request to firebase
 
-    }catch (e) {
+    } catch (e) {
       // throw the Firebase AuthException that we caught
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Email or Password is wrong"),
       ));
-
     }
   }
 
@@ -65,6 +66,13 @@ class _LoginState extends State<Login> {
         centerTitle: true,
         title: Text("Login"),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MainClubPage()));
+            },
+          ),
           IconButton(
             icon: Icon(Icons.person),
             onPressed: () {

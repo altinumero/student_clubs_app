@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
+import '../home/main_club_page.dart';
 import '../utils/colors.dart';
 import 'login.dart';
 
@@ -23,24 +24,25 @@ class _EventDetailState extends State<EventDetail> {
         title: Text("Event Detail"),
         actions: [
           IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MainClubPage()));
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.person),
-            onPressed:
-                () {
-                  FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                    if (firebaseUser == null) {
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Login()));
-                    } else {
-                      Navigator.push(context,
-                          MaterialPageRoute (builder: (context) => Profile()
-                          )
-                      );
-                    }
-                  });
-                }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            onPressed: () {
+              FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                if (firebaseUser == null) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Login()));
+                } else {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Profile()));
+                }
+              });
+            },
           ),
         ],
       ),
@@ -51,7 +53,9 @@ class _EventDetailState extends State<EventDetail> {
           Container(
             padding: EdgeInsets.symmetric(horizontal: 6),
             child: Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean bibendum eros eu iaculis porttitor. Vestibulum elementum, ipsum non cursus aliquam, enim mauris vehicula mauris, ac imperdiet purus libero at justo. Integer mollis orci pretium, semper ligula vel, commodo erat. Donec id orci eget diam facilisis tincidunt. Fusce laoreet sem a tortor scelerisque, et lacinia ante rhoncus. Quisque massa leo, fringilla id ex sit amet, rutrum faucibus lacus. Ut ultrices est lorem, non pulvinar dui efficitur vitae. Fusce rhoncus vulputate arcu, ac blandit sapien iaculis non. ",style: TextStyle(color: Appcolors.textColor),),
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean bibendum eros eu iaculis porttitor. Vestibulum elementum, ipsum non cursus aliquam, enim mauris vehicula mauris, ac imperdiet purus libero at justo. Integer mollis orci pretium, semper ligula vel, commodo erat. Donec id orci eget diam facilisis tincidunt. Fusce laoreet sem a tortor scelerisque, et lacinia ante rhoncus. Quisque massa leo, fringilla id ex sit amet, rutrum faucibus lacus. Ut ultrices est lorem, non pulvinar dui efficitur vitae. Fusce rhoncus vulputate arcu, ac blandit sapien iaculis non. ",
+              style: TextStyle(color: Appcolors.textColor),
+            ),
           ),
           sizedBox(16),
           Visibility(

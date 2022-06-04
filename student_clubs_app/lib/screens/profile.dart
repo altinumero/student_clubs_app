@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:student_clubs_app/home/main_club_page.dart';
 import 'package:student_clubs_app/screens/login.dart';
 import 'package:student_clubs_app/screens/my_clubs.dart';
 import 'package:student_clubs_app/screens/my_events.dart';
@@ -29,6 +30,13 @@ class _ProfileState extends State<Profile> {
         centerTitle: true,
         title: const Text("Profile"),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed:
+                () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>MainClubPage()));
+            }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+          ),
           IconButton(
             icon: const Icon(Icons.person),
             onPressed:
@@ -104,12 +112,13 @@ class _ProfileState extends State<Profile> {
 
             }
         ),
+        sizedBox(16),
         FutureBuilder<String>(
             future: getCurrentUserEmail(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if (snapshot.hasData) {
-                return Text("email:" + snapshot.data , //veri tabanından mail
-                    style: TextStyle(color: Appcolors.textColor));
+                return Text(snapshot.data , //veri tabanından mail
+                    style: TextStyle(color: Appcolors.textColor,fontSize: 24));
               }
               else {
                 return Text("Loading user data...");
@@ -131,7 +140,7 @@ class _ProfileState extends State<Profile> {
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
       onPressed: onClicked,
-      child: Text(text),
+      child: Text(text,style: TextStyle(fontSize: 18),),
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/event_detail.dart';
@@ -24,6 +25,8 @@ class ClubDetail extends StatefulWidget {
 }
 
 class _ClubDetailState extends State<ClubDetail> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  var usertypedata;
   @override
   void initState() {
     super.initState();
@@ -67,6 +70,24 @@ class _ClubDetailState extends State<ClubDetail> {
         physics: const BouncingScrollPhysics(),
         children: [
           sizedBox(24),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(300),
+                color: Appcolors.darkBlueColor),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(" ${clubnamedata}", //veri tabanından isim
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        color: Appcolors.textColor)),
+              ),
+            ),
+          ),
+          sizedBox(24),
           Row(
             children: [
               buildClubImage(clubimagedata),
@@ -74,6 +95,8 @@ class _ClubDetailState extends State<ClubDetail> {
               Container(
                 width: 250,
                 decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Appcolors.darkBlueColor,
                     border: Border.all(color: Appcolors.darkBlueColor)),
                 child: Padding(
                   padding: EdgeInsets.all(8.0),
@@ -102,49 +125,58 @@ class _ClubDetailState extends State<ClubDetail> {
           sizedBox(16),
           Container(
             decoration: BoxDecoration(
+                color: Appcolors.darkBlueColor,
                 border: Border.all(color: Appcolors.darkBlueColor)),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Club Description : ${clubdescriptiondata}",
+                "Club Description : ${clubdescriptiondata} AJKSDHAJSKDHSAJKDHJKASDHJAKDJAJKADHASDHSHKDHASDAJHKDAKDAJDAKADAKSJSKADJASKDHASJKDHAS",
                 style: TextStyle(color: Appcolors.textColor),
               ),
             ),
           ),
           sizedBox(16),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Visibility(
-                  visible: (3 + 3 == 6),
-                  child: Container(
-                    child: buildElevatedButton(
-                        "Join Club", Appcolors.joinColor, () {}),
-                  )),
-              Visibility(
-                  visible: (3 + 3 == 6),
-                  child: Container(
-                    child: buildElevatedButton(
-                        "Leave Club", Appcolors.warningColor, () {}),
-                  )),
-            ],
-          ),
-          Divider(
-            color: Appcolors.darkBlueColor,
-          ),
-          sizedBox(4),
+          FutureBuilder(
+              future: getCurrentUserType(),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Visibility(
+                        visible: ((snapshot.data == "student" ||
+                                snapshot.data == "president") &&
+                            3 + 3 == 6),
+                        child: Container(
+                          child: buildElevatedButton(
+                              "Join Club", Appcolors.joinColor, () {}),
+                        )),
+                    Visibility(
+                        visible: ((snapshot.data == "student" ||
+                                snapshot.data == "president") &&
+                            3 + 3 == 7),
+                        child: Container(
+                          child: buildElevatedButton(
+                              "Leave Club", Appcolors.warningColor, () {}),
+                        )),
+                  ],
+                );
+              }),
+          sizedBox(16),
           buildName(clubnamedata),
-          sizedBox(4),
           buildEventList()
         ],
       ),
-      bottomNavigationBar: Visibility(
-        visible: (3 + 3 == 6),
-        child: Container(
-          child:
-              buildElevatedButton("Remove Club", Appcolors.warningColor, () {}),
-        ),
-      ),
+      bottomNavigationBar: FutureBuilder(
+          future: getCurrentUserType(),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            return Visibility(
+              visible: (snapshot.data == "sks"),
+              child: Container(
+                child: buildElevatedButton(
+                    "Remove Club", Appcolors.warningColor, () {}),
+              ),
+            );
+          }),
     );
   }
 
@@ -155,19 +187,9 @@ class _ClubDetailState extends State<ClubDetail> {
   buildName(clubnamedata) {
     return Column(
       children: [
-        Text(" ${clubnamedata} Club", //veri tabanından isim
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Appcolors.textColor)),
-        sizedBox(4),
-        Divider(
-          color: Appcolors.darkBlueColor,
-        ),
-        sizedBox(4),
         Text(
-          "Club's Events", //veri tabanından mail
-          style: TextStyle(color: Appcolors.textColor),
+          "${clubnamedata}'s Events", //veri tabanından mail
+          style: TextStyle(color: Appcolors.darkBlueColor),
         )
       ],
     );
@@ -200,7 +222,9 @@ class _ClubDetailState extends State<ClubDetail> {
                 ),
               ),
               title: Text(
-                  "Zınk"), //isimler veritabanından //Text(this.products![position].name!),
+                "Zınk",
+                style: TextStyle(color: Appcolors.darkBlueColor),
+              ), //isimler veritabanından //Text(this.products![position].name!),
               onTap: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => EventDetail()));
@@ -238,5 +262,21 @@ class _ClubDetailState extends State<ClubDetail> {
         ),
       ),
     );
+  }
+
+  Future<String> getCurrentUserType() async {
+    final uid = await getCurrentUser();
+
+    DocumentSnapshot snapshot =
+        await Firestore.instance.collection('users').document(uid).get();
+    var userType = snapshot.data[
+        'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    print(userType);
+    return userType;
+  }
+
+  Future<String> getCurrentUser() async {
+    FirebaseUser user = await _auth.currentUser();
+    return user.uid;
   }
 }

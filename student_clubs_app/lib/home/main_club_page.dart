@@ -59,11 +59,14 @@ class _MainClubPageState extends State<MainClubPage> {
             ),
             padding: const EdgeInsets.all(15),
           ),
+          Container(
+            height: 250,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                height: 500,
+                height: 250,
                 width: 200,
                 child: InkWell(
                   onTap: () {
@@ -83,7 +86,7 @@ class _MainClubPageState extends State<MainClubPage> {
                 ),
               ),
               Container(
-                height: 500,
+                height: 250,
                 width: 200,
                 child: InkWell(
                   onTap: () {

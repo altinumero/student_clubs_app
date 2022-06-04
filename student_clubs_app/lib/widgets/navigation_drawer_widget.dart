@@ -65,7 +65,7 @@ var usertypedata;
 
                 Visibility(
 
-                  visible: ( snapshot.data=="student" ),
+                  visible: ( snapshot.data=="student" || snapshot.data=="president"),
                   //EĞER  öğrenciyse
                   child: buildMenuItem(
 
@@ -74,7 +74,7 @@ var usertypedata;
                       onClicked: () => selectedItem(context, 2)),
                 ),
                 Visibility(
-                  visible: (snapshot.data=="student" ),
+                  visible: (snapshot.data=="student" || snapshot.data=="president"),
                   child: buildMenuItem(
                       text: "My Events",
                       icon: Icons.event_available,

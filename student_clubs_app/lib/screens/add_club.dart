@@ -300,7 +300,7 @@ class _AddClubState extends State<AddClub> {
     final ref = FirebaseStorage.instance
         .ref()
         .child('clubImages')
-        .child('nyanImage.jpg');
+        .child('${clubNameController.text}.jpg');
 
     await ref
         .putFile(_pickedImage)

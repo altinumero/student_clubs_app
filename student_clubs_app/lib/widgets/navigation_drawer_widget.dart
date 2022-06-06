@@ -168,15 +168,15 @@ var usertypedata;
         break;
       case 1:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const EventsList()));
+            .push(MaterialPageRoute(builder: (context) =>  EventsList()));
         break;
       case 2:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const MyClubs()));
+            .push(MaterialPageRoute(builder: (context) =>  MyClubs()));
         break;
       case 3:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const MyEvents()));
+            .push(MaterialPageRoute(builder: (context) =>  MyEvents()));
         break;
       case 4:
         Navigator.of(context)
@@ -184,7 +184,7 @@ var usertypedata;
         break;
       case 5:
         Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const CreateEventReport()));
+            MaterialPageRoute(builder: (context) =>  CreateEventReport()));
         break;
       case 6:
         Navigator.of(context).push(MaterialPageRoute(

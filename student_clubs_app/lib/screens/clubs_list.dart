@@ -102,7 +102,9 @@ class ClubsList extends StatelessWidget {
                               statusdata: documents[index]['Status'],
                               clubdescriptiondata: documents[index]
                                   ['Description'],
-                              clubimagedata: documents[index]['clubImage'])),
+                              clubimagedata: documents[index]['clubImage']
+                          )
+                      ),
                     );
                   },
                 ),

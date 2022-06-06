@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  var clubnamefortext;
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +88,7 @@ class _ProfileState extends State<Profile> {
     CollectionReference users = Firestore.instance.collection('users');
     var currentuserid = getCurrentUser();
 
+
     return Column(
       children: [
         FutureBuilder<String>(
@@ -104,12 +108,30 @@ class _ProfileState extends State<Profile> {
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if (snapshot.hasData) {
                 return Text(snapshot.data, //veri tabanından mail
-                    style: TextStyle(color: Appcolors.textColor, fontSize: 24));
+                    style: TextStyle(color: Colors.black, fontSize: 24));
               } else {
                 return Text("Loading user data...");
               }
             }),
-      ],
+        sizedBox(15),
+        FutureBuilder<String>(
+          future: getPresidentUsersClubName(),
+          initialData: null, // You can set a default value here.
+          builder: (context, snapshot) {
+            debugPrint('data1: ' + snapshot.data.toString());
+            return snapshot.data == null ?
+            Text("no data") :
+            Text( snapshot.data.toString() ,
+              style: TextStyle(
+                color: Colors.white,
+                    fontSize:20,
+                  fontWeight: FontWeight.bold
+              ),
+
+            );
+          },
+        )
+    ],
     );
   }
 
@@ -177,6 +199,41 @@ class _ProfileState extends State<Profile> {
   Future<String> getCurrentUser() async {
     FirebaseUser user = await _auth.currentUser();
     return user.uid;
+  }
+
+  Future<String> getCurrentUserType() async {
+    final uid = await getCurrentUser();
+
+    DocumentSnapshot snapshot =
+    await Firestore.instance.collection('users').document(uid).get();
+    var userType = snapshot.data['userType'] ;//you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    log("usertype: " +userType);
+    return userType;
+  }
+
+
+  Future<String> getPresidentUsersClubName() async {
+
+    var  currentUser = await getCurrentUser(); //id
+    var currentUserType = await getCurrentUserType();
+
+    if(currentUserType.toString() =="president"){
+
+    var collection = await Firestore.instance.collection('clubs');
+    var querySnapshot = await collection
+        .where('ClubPresident'.toString(), isEqualTo: currentUser.toString())
+        .getDocuments();
+
+    for (var snapshot in querySnapshot.documents) {
+      clubnamefortext = snapshot.data["ClubName"];
+    }
+
+    log('dataa: $clubnamefortext');
+
+    return "President of the " + clubnamefortext + " club";}
+    else return "";
+
+
   }
 
   Future<String> getCurrentUserName() async {

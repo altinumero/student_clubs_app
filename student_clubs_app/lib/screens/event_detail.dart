@@ -1,5 +1,9 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:student_clubs_app/screens/my_events.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
 import '../home/main_club_page.dart';
@@ -7,15 +11,39 @@ import '../utils/colors.dart';
 import 'login.dart';
 
 class EventDetail extends StatefulWidget {
-  const EventDetail({Key key}) : super(key: key);
+  EventDetail(
+      {key,
+        this.eventnamedata,
+        this.eventownerdata,
+        this.eventlocationdata,
+        this.eventimagedata,
+        this.eventdescriptiondata,
+
+        })
+      : super(key: key);
+  final eventnamedata;
+  final eventownerdata;
+  final eventlocationdata;
+  final eventimagedata;
+  final eventdescriptiondata;
+
 
   @override
   State<EventDetail> createState() => _EventDetailState();
 }
 
 class _EventDetailState extends State<EventDetail> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  var usertypedata;
+  List MyEvents;
+
   @override
   Widget build(BuildContext context) {
+    final eventnamedata = widget.eventnamedata;
+    final eventownerdata = widget.eventownerdata;
+    final eventlocationdata = widget.eventlocationdata;
+    final eventimagedatadata = widget.eventimagedata;
+    final eventdescriptiondatadata = widget.eventdescriptiondata;
     return Scaffold(
       backgroundColor: Appcolors.backgroundColor,
       appBar: AppBar(
@@ -46,31 +74,83 @@ class _EventDetailState extends State<EventDetail> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          sizedBox(16),
-          buildDetails(),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 6),
-            child: Text(
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean bibendum eros eu iaculis porttitor. Vestibulum elementum, ipsum non cursus aliquam, enim mauris vehicula mauris, ac imperdiet purus libero at justo. Integer mollis orci pretium, semper ligula vel, commodo erat. Donec id orci eget diam facilisis tincidunt. Fusce laoreet sem a tortor scelerisque, et lacinia ante rhoncus. Quisque massa leo, fringilla id ex sit amet, rutrum faucibus lacus. Ut ultrices est lorem, non pulvinar dui efficitur vitae. Fusce rhoncus vulputate arcu, ac blandit sapien iaculis non. ",
-              style: TextStyle(color: Appcolors.textColor),
-            ),
-          ),
-          sizedBox(16),
-          Visibility(
-              visible: (3 + 3 == 6),
-              child: Container(
-                child: buildElevatedButton(
-                    "Join Event", Appcolors.joinColor, () {}),
-              )),
-          Visibility(
-              visible: (3 + 3 == 7),
-              child: Container(
-                child: buildElevatedButton(
-                    "Leave Event", Appcolors.warningColor, () {}),
-              )),
-        ],
+      body: FutureBuilder(
+          future: getCurrentUserType(),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasData){
+          return ListView(
+            children: [
+              sizedBox(16),
+              buildDetails(eventnamedata,eventownerdata,eventlocationdata,eventimagedatadata,eventdescriptiondatadata),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 6),
+                child: Text(
+                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean bibendum eros eu iaculis porttitor. Vestibulum elementum, ipsum non cursus aliquam, enim mauris vehicula mauris, ac imperdiet purus libero at justo. Integer mollis orci pretium, semper ligula vel, commodo erat. Donec id orci eget diam facilisis tincidunt. Fusce laoreet sem a tortor scelerisque, et lacinia ante rhoncus. Quisque massa leo, fringilla id ex sit amet, rutrum faucibus lacus. Ut ultrices est lorem, non pulvinar dui efficitur vitae. Fusce rhoncus vulputate arcu, ac blandit sapien iaculis non. ",
+                  style: TextStyle(color: Appcolors.textColor),
+                ),
+              ),
+              sizedBox(16),
+
+              FutureBuilder(
+                  future: buildMyevList(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData){
+                      log("eventlistsnapshot " + snapshot.data.toString());
+                    log("eventboolean:" + snapshot.data.contains(eventnamedata).toString());
+                  return Visibility(
+
+                      visible: ( snapshot.data.contains(eventnamedata)==false),
+                      child: Container(
+
+                        child: buildElevatedButton(
+
+                            "Join Event", Appcolors.joinColor, () async{
+                          final FirebaseUser user = await _auth.currentUser();
+                          final uid = user.uid;
+
+                          log("c" + uid);
+                          DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+                          DocumentSnapshot doc = await docRef.get();
+                          MyEvents = doc.data["MyEvents"];
+                          if(MyEvents.contains(eventnamedata)==false){
+                            docRef.updateData(
+                                {
+                                  'MyEvents': FieldValue.arrayUnion(
+                                      [eventnamedata])
+                                }
+                            );
+                          }
+
+                        }),
+                      ));}else { return Text("loading");}
+                }
+              ),
+              FutureBuilder(
+                  future: buildMyevList(),
+                  builder: (context, snapshot) {
+            if (snapshot.hasData){
+                  return Visibility(
+                      visible: (snapshot.data.contains(eventnamedata)==true),
+                      child: Container(
+                        child: buildElevatedButton(
+                            "Leave Event", Appcolors.warningColor, () async {
+                          final FirebaseUser user = await _auth.currentUser();
+                          final uid = user.uid;
+                          DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+                          DocumentSnapshot doc = await docRef.get();
+                          docRef.updateData(
+                              {
+                                'MyEvents': FieldValue.arrayRemove(
+                                    [eventnamedata])
+                              }
+                          );
+                        }),
+                      ));}else { return Text("loading");}
+                }
+              ),
+            ],
+          );} else { return Text("loading");}
+        }
       ),
     );
   }
@@ -79,10 +159,10 @@ class _EventDetailState extends State<EventDetail> {
     return SizedBox(height: i);
   }
 
-  buildDetails() {
+  buildDetails(eventnamedata,eventownerdata,eventlocationdata,eventimagedata,eventdescriptiondata) {
     return Column(
       children: [
-        Text("Event Name", //veri tabanından isim
+        Text("EventName : ${eventnamedata}", //veri tabanından isim
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
@@ -93,7 +173,7 @@ class _EventDetailState extends State<EventDetail> {
         ),
         sizedBox(4),
         Text(
-          "Event Owner", //veri tabanından mail
+          "EventOwner : ${eventownerdata} Club's Event", //veri tabanından mail
           style: TextStyle(color: Appcolors.textColor),
         ),
         sizedBox(4),
@@ -102,7 +182,7 @@ class _EventDetailState extends State<EventDetail> {
         ),
         sizedBox(4),
         Text(
-          "Event Place : LMF317", //veri tabanından
+          "Event Place : ${eventlocationdata}", //veri tabanından
           style: TextStyle(color: Appcolors.textColor),
         ),
         sizedBox(4),
@@ -125,5 +205,35 @@ class _EventDetailState extends State<EventDetail> {
       onPressed: onClicked, //logout için veritabanı fonksiyonu
       child: Text(text),
     );
+  }
+
+  Future<String> getCurrentUserType() async {
+    final uid = await getCurrentUser();
+
+    DocumentSnapshot snapshot =
+    await Firestore.instance.collection('users').document(uid).get();
+    var userType = snapshot.data[
+    'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    print(userType);
+    return userType;
+  }
+
+  Future<String> getCurrentUser() async {
+    FirebaseUser user = await _auth.currentUser();
+    return user.uid;
+  }
+
+  Future<List> buildMyevList() async {
+    final FirebaseUser user = await _auth.currentUser();
+    final uid = user.uid;
+
+    log("c" + uid);
+    DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+    DocumentSnapshot doc = await docRef.get();
+    MyEvents = doc.data["MyEvents"];
+    print("mm" + MyEvents.toString());
+    log("myevents: " +MyEvents.toString());
+
+    return MyEvents;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,9 @@ class _ClubDetailState extends State<ClubDetail> {
     super.initState();
   }
 
+  var clubpresidentrealname;
+  List MyClubs;
+
   Widget build(BuildContext context) {
     final clubnamedata = widget.clubnamedata;
     final clubpresidentdata = widget.clubpresidentdata;
@@ -62,6 +67,8 @@ class _ClubDetailState extends State<ClubDetail> {
     final statusdata = widget.statusdata;
     final clubdescriptiondata = widget.clubdescriptiondata;
     final clubimagedata = widget.clubimagedata;
+
+
     return Scaffold(
       backgroundColor: Appcolors.backgroundColor,
       appBar: AppBar(
@@ -128,10 +135,18 @@ class _ClubDetailState extends State<ClubDetail> {
                   padding: EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Text("President : ${clubpresidentdata}",
-                          style: TextStyle(color: Appcolors.textColor)),
+                      FutureBuilder(
+                          future: clubPresidentRealName(clubpresidentdata),
+                          //initialData: null, // You can set a default value here.
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text("President : " + snapshot.data,
+                                  style: TextStyle(color: Appcolors.textColor));
+                            }
+                            return Text("");
+                          }),
                       Text("Advisor:${clubadvisordata} ",
-                          style: TextStyle(color: Appcolors.textColor)),
+                          style: TextStyle(color: Appcolors.textColor)) ,
                       Text("Vice President : ${clubvicepresidentdata}",
                           style: TextStyle(color: Appcolors.textColor)),
                       Text("Accountant: ${clubaccountantdata}",
@@ -167,35 +182,124 @@ class _ClubDetailState extends State<ClubDetail> {
           ),
           sizedBox(16),
           FutureBuilder(
-              future: getCurrentUserType(),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              future: buildMyClubList(),
+              builder: ( context,  snapshot) {
+                if (snapshot.hasData){
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Visibility(
-                        visible: ((snapshot.data == "student" ||
-                                snapshot.data == "president") &&
-                            3 + 3 == 6 &&
-                            statusdata=="Active"),
-                        child: Container(
-                          child: buildElevatedButton(
-                              "Join Club", Appcolors.joinColor, () {}),
-                        )),
+                        visible: (snapshot.data.contains(clubnamedata)==false
+                            && statusdata=="Active"),
+                        child:Container(
+                              child: buildElevatedButton(
+                                  "Join Club", Appcolors.joinColor, () async{
+
+                                final FirebaseUser user = await _auth.currentUser();
+                                final uid = user.uid;
+
+                                log("c" + uid);
+                                DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+                                DocumentSnapshot doc = await docRef.get();
+                                MyClubs = doc.data["MyClubs"];
+                                if(MyClubs.contains(clubnamedata)==false){
+                                  docRef.updateData(
+                                      {
+                                        'MyClubs': FieldValue.arrayUnion(
+                                            [clubnamedata])
+                                      }
+                                  );
+                                }
+
+                              }),
+                            ),
+
+                        ),
                     Visibility(
-                        visible: ((snapshot.data == "student" ||
-                                snapshot.data == "president") &&
-                            3 + 3 == 7 &&
+                        visible: (snapshot.data.contains(clubnamedata)==true &&
                             statusdata=="Active"),
                         child: Container(
                           child: buildElevatedButton(
-                              "Leave Club", Appcolors.warningColor, () {}),
+                              "Leave Club", Appcolors.warningColor, () async{
+
+                            final FirebaseUser user = await _auth.currentUser();
+                            final uid = user.uid;
+                            DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+                            DocumentSnapshot doc = await docRef.get();
+                            docRef.updateData(
+                                {
+                                  'MyClubs': FieldValue.arrayRemove(
+                                      [clubnamedata])
+                                }
+                            );
+
+                          }),
                         )),
                   ],
-                );
+                );}else{return Text("loading");}
               }),
           sizedBox(16),
           buildName(clubnamedata),
-          buildEventList()
+      StreamBuilder(
+        stream: Firestore.instance.collection('events').where('EventOwnerClub'.toString(), isEqualTo: clubnamedata).snapshots(),
+        builder: (context, streamSnapshot) {
+          if (streamSnapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final documents = streamSnapshot.data.documents;
+          return ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: streamSnapshot.data.documents.length,
+            itemBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.all(6),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Appcolors.textColor.withOpacity(0.2),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3))
+                    ]),
+                child: ListTile(
+                  leading: ClipOval(
+                    child: Material(
+                      child: CircleAvatar(
+                          child: Text("Event"),
+                          backgroundColor: Colors.transparent),
+                    ),
+                  ),
+                  title: Text(documents[index]['EventName']),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EventDetail(
+                        eventownerdata:documents[index]["EventOwnerClub"],
+                        eventnamedata: documents[index]['EventName'],
+                        eventlocationdata: documents[index]
+                        ['EventLocation'],
+                        eventdescriptiondata: documents[index]
+                        ['EventDescription']
+                    )
+                      )
+                      ,
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+
+
         ],
       ),
       bottomNavigationBar: FutureBuilder(
@@ -227,45 +331,18 @@ class _ClubDetailState extends State<ClubDetail> {
     );
   }
 
-  buildEventList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 16,
-        ),
-        ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: 16, //kaç tane olduğu veritabanından
-          itemBuilder: (BuildContext context, int position) {
-            return ListTile(
-              leading: ClipOval(
-                child: Material(
-                  child: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: Ink.image(
-                      image: NetworkImage(//logolar veritabanından
-                          "https://cdn.pixabay.com/photo/2022/05/09/17/08/mute-swan-7185076_1280.jpg"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              title: Text(
-                "Zınk",
-                style: TextStyle(color: Appcolors.darkBlueColor),
-              ), //isimler veritabanından //Text(this.products![position].name!),
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => EventDetail()));
-              }, //detay sayfasına aktarıcaz yine veritabanı bağlantısı(sqflite_demo,productListte var)
-            );
-          },
-        )
-      ],
-    );
+  buildEventList(clubnamedata) async {
+    var collection = await Firestore.instance.collection('events');
+    var querySnapshot = await collection
+        .where('EventOwnerClub'.toString(), isEqualTo: clubnamedata)
+        .getDocuments();
+    //final int docNumForItemCount = querySnapshot.documents.length;
+    var snapshotstuff = querySnapshot.documents;
+     return  snapshotstuff;
+    for (var snapshot in querySnapshot.documents) {
+    //clubnameforevent = snapshot.data["ClubName"];
+
+    }
   }
 
   buildElevatedButton(String text, Color color, VoidCallback onClicked) {
@@ -310,5 +387,25 @@ class _ClubDetailState extends State<ClubDetail> {
   Future<String> getCurrentUser() async {
     FirebaseUser user = await _auth.currentUser();
     return user.uid;
+  }
+
+  clubPresidentRealName(clubpresidentdata) async {
+    DocumentSnapshot snapshot = await Firestore.instance.collection('users').document(clubpresidentdata).get();
+     clubpresidentrealname  = snapshot.data['username'] ;
+    return clubpresidentrealname;
+  }
+
+  Future<List>buildMyClubList() async {
+    final FirebaseUser user = await _auth.currentUser();
+    final uid = user.uid;
+
+    log("c" + uid);
+    DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+    DocumentSnapshot doc = await docRef.get();
+    MyClubs = doc.data["MyClubs"];
+    print("mm" + MyClubs.toString());
+    log("myclubs: " +MyClubs.toString());
+
+    return MyClubs;
   }
 }

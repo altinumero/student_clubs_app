@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:student_clubs_app/home/main_club_page.dart';
 
-void main() {
+void main() async{
+
   runApp(const MyApp());
 }
 

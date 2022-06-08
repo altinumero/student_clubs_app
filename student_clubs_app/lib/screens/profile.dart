@@ -53,30 +53,46 @@ class _ProfileState extends State<Profile> {
           ),
         ],
       ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        children: [
-          sizedBox(24),
-          buildProfileImage(), //veritabanından kullanıcı gidecek
-          sizedBox(16),
-          buildName(), //veritabanından kullanıcı yolluycaz.
-          sizedBox(16),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildElevatedButton("My Clubs", () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => MyClubs()));
-              }),
-              buildElevatedButton("My Events", () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => MyEvents()));
-              })
-            ],
-          ),
-        ],
+      body: Container(
+        decoration:
+        BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Colors.purple, Colors.blue])
+        ),
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: [
+            sizedBox(24),
+            buildProfileImage(), //veritabanından kullanıcı gidecek
+            sizedBox(16),
+            buildName(), //veritabanından kullanıcı yolluycaz.
+            sizedBox(16),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                buildElevatedButton("My Clubs", () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => MyClubs()));
+                }),
+                buildElevatedButton("My Events", () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => MyEvents()));
+                })
+              ],
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
+        decoration:
+        BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Colors.purple, Colors.blue])
+        ),
         child: buildElevatedButton("Logout", () {
           _signOut();
         }),

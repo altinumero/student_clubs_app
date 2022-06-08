@@ -51,63 +51,72 @@ class _MainClubPageState extends State<MainClubPage> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            child: const Image(
-              image: AssetImage("assets/logo.png"),
-            ),
-            padding: const EdgeInsets.all(15),
-          ),
-          Container(
-            height: 250,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: 250,
-                width: 200,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ClubsList()));
-                  },
-                  child: Card(
-                    color: Appcolors.darkBlueColor,
-                    elevation: 2,
-                    child: Center(
-                        child: Text(
-                      "Clubs",
-                      style:
-                          TextStyle(fontSize: 48, color: Appcolors.textColor),
-                    )),
-                  ),
-                ),
+      body: Container(
+        decoration:
+        BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Colors.purple, Colors.blue])
+        ),
+        child: Column(
+          children: [
+            Container(
+              child: const Image(
+                image: AssetImage("assets/logo.png"),
               ),
-              Container(
-                height: 250,
-                width: 200,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => EventsList()));
-                  },
-                  child: Card(
+              padding: const EdgeInsets.all(15),
+            ),
+            Container(
+              height: 250,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 250,
+                  width: 200,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => ClubsList()));
+                    },
+                    child: Card(
                       color: Appcolors.darkBlueColor,
                       elevation: 2,
                       child: Center(
-                        child: Text(
-                          "Events",
-                          style:
-                              TextStyle(fontSize: 48, color: Appcolors.textColor),
-                        ),
+                          child: Text(
+                        "Clubs",
+                        style:
+                            TextStyle(fontSize: 48, color: Appcolors.textColor),
                       )),
+                    ),
+                  ),
                 ),
-              )
-            ],
-          )
-        ],
+                Container(
+                  height: 250,
+                  width: 200,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => EventsList()));
+                    },
+                    child: Card(
+                        color: Appcolors.darkBlueColor,
+                        elevation: 2,
+                        child: Center(
+                          child: Text(
+                            "Events",
+                            style:
+                                TextStyle(fontSize: 48, color: Appcolors.textColor),
+                          ),
+                        )),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
       ),
       backgroundColor: Appcolors.backgroundColor,
       drawer: NavigationDrawerWidget(),

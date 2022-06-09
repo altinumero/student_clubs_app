@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:student_clubs_app/screens/events_list.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
 import '../home/main_club_page.dart';
@@ -47,54 +49,61 @@ class _CreateEventState extends State<CreateEvent> {
   Widget build(BuildContext context) {
 
 
-    return Scaffold(
-      backgroundColor: Appcolors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Appcolors.mainColor,
-        centerTitle: true,
-        title: Text("Create Event"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MainClubPage()));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                if (firebaseUser == null) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Login()));
-                } else {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Profile()));
-                }
-              });
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(30.0),
-        child: ListView(
-          children: [
-            buildEventNameField(),
-            sizedBox(16),
-            buildEventOwnerField(),
-            sizedBox(16),
-            buildEventPlaceField(),
-            sizedBox(16),
-            buildEventDescriptionField(),
-            sizedBox(16),
-            buildElevatedButton("Create", Appcolors.joinColor, () {
-               // çalışacak method butona basınca
-
-
-            })
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.purple, Colors.blue])),
+      child: Scaffold(
+        backgroundColor: Appcolors.transparent,
+        appBar: AppBar(
+          backgroundColor: Appcolors.mainColor,
+          centerTitle: true,
+          title: Text("Create Event"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainClubPage()));
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                  if (firebaseUser == null) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profile()));
+                  }
+                });
+              },
+            ),
           ],
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(30.0),
+          child: ListView(
+            children: [
+              buildEventNameField(),
+              sizedBox(16),
+              buildEventOwnerField(),
+              sizedBox(16),
+              buildEventPlaceField(),
+              sizedBox(16),
+              buildEventDescriptionField(),
+              sizedBox(16),
+              buildElevatedButton("Create", Appcolors.joinColor, () {
+                 // çalışacak method butona basınca
+
+
+              })
+            ],
+          ),
         ),
       ),
     );
@@ -172,18 +181,6 @@ class _CreateEventState extends State<CreateEvent> {
   }
 
   void uploadFileandSendData() async {
-
-    // bu methodu submit butonunun içine koyulcak database club resmi yüklenmesi için
-    /*final ref = FirebaseStorage.instance
-        .ref()
-        .child('eventImages')
-        .child('${clubNameController.text}.jpg');*/
-
-    /*await ref
-        .putFile(_pickedImage)
-        .onComplete; // bu imageı database upload ediyo*/
-
-    //final url = await ref.getDownloadURL(); // this is the url for downloading the image
     var  currentUser = await getCurrentUser();
     var collection = await Firestore.instance.collection('clubs');
     var querySnapshot = await collection
@@ -217,6 +214,13 @@ class _CreateEventState extends State<CreateEvent> {
         .collection("events")
         .document(forID)
         .setData(map);
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => EventsList()));
+    Fluttertoast.showToast(
+      msg: "Event Created!",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+    );
     // bu urli yarattığımız kulubün imageUrl fieldina yapıştırmalıyız submit yaparken
   }
 

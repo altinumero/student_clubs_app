@@ -19,49 +19,46 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var clubnamefortext;
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Appcolors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Appcolors.mainColor,
-        centerTitle: true,
-        title: const Text("Profile"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MainClubPage()));
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                if (firebaseUser == null) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Login()));
-                } else {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Profile()));
-                  Navigator.pop(context);
-                }
-              });
-            }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
-          ),
-        ],
-      ),
-      body: Container(
-        decoration:
-        BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.purple, Colors.blue])
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.purple, Colors.blue])),
+      child: Scaffold(
+        backgroundColor: Appcolors.transparent,
+        appBar: AppBar(
+          backgroundColor: Appcolors.mainColor,
+          centerTitle: true,
+          title: const Text("Profile"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainClubPage()));
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.person),
+              onPressed: () {
+                FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                  if (firebaseUser == null) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profile()));
+
+                  }
+                });
+              }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
+            ),
+          ],
         ),
-        child: ListView(
+        body: ListView(
           physics: const BouncingScrollPhysics(),
           children: [
             sizedBox(24),
@@ -77,25 +74,18 @@ class _ProfileState extends State<Profile> {
                       .push(MaterialPageRoute(builder: (context) => MyClubs()));
                 }),
                 buildElevatedButton("My Events", () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => MyEvents()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => MyEvents()));
                 })
               ],
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: Container(
-        decoration:
-        BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.purple, Colors.blue])
+        bottomNavigationBar: Container(
+          child: buildElevatedButton("Logout", () {
+            _signOut();
+          }),
         ),
-        child: buildElevatedButton("Logout", () {
-          _signOut();
-        }),
       ),
     );
   }
@@ -103,7 +93,6 @@ class _ProfileState extends State<Profile> {
   buildName() {
     CollectionReference users = Firestore.instance.collection('users');
     var currentuserid = getCurrentUser();
-
 
     return Column(
       children: [
@@ -135,19 +124,18 @@ class _ProfileState extends State<Profile> {
           initialData: null, // You can set a default value here.
           builder: (context, snapshot) {
             debugPrint('data1: ' + snapshot.data.toString());
-            return snapshot.data == null ?
-            Text("no data") :
-            Text( snapshot.data.toString() ,
-              style: TextStyle(
-                color: Colors.white,
-                    fontSize:20,
-                  fontWeight: FontWeight.bold
-              ),
-
-            );
+            return snapshot.data == null
+                ? Text("no data")
+                : Text(
+                    snapshot.data.toString(),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  );
           },
         )
-    ],
+      ],
     );
   }
 
@@ -221,35 +209,32 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-    await Firestore.instance.collection('users').document(uid).get();
-    var userType = snapshot.data['userType'] ;//you can get any field value you want by writing the exact fieldName in the data[fieldName]
-    log("usertype: " +userType);
+        await Firestore.instance.collection('users').document(uid).get();
+    var userType = snapshot.data[
+        'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    log("usertype: " + userType);
     return userType;
   }
 
-
   Future<String> getPresidentUsersClubName() async {
-
-    var  currentUser = await getCurrentUser(); //id
+    var currentUser = await getCurrentUser(); //id
     var currentUserType = await getCurrentUserType();
 
-    if(currentUserType.toString() =="president"){
+    if (currentUserType.toString() == "president") {
+      var collection = await Firestore.instance.collection('clubs');
+      var querySnapshot = await collection
+          .where('ClubPresident'.toString(), isEqualTo: currentUser.toString())
+          .getDocuments();
 
-    var collection = await Firestore.instance.collection('clubs');
-    var querySnapshot = await collection
-        .where('ClubPresident'.toString(), isEqualTo: currentUser.toString())
-        .getDocuments();
+      for (var snapshot in querySnapshot.documents) {
+        clubnamefortext = snapshot.data["ClubName"];
+      }
 
-    for (var snapshot in querySnapshot.documents) {
-      clubnamefortext = snapshot.data["ClubName"];
-    }
+      log('dataa: $clubnamefortext');
 
-    log('dataa: $clubnamefortext');
-
-    return "President of the " + clubnamefortext + " club";}
-    else return "";
-
-
+      return "President of the " + clubnamefortext + " club";
+    } else
+      return "";
   }
 
   Future<String> getCurrentUserName() async {

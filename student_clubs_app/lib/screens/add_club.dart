@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:student_clubs_app/screens/clubs_list.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
 import '../home/main_club_page.dart';
@@ -57,89 +59,96 @@ class _AddClubState extends State<AddClub> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Appcolors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Appcolors.mainColor,
-        centerTitle: true,
-        title: Text("Add Club"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MainClubPage()));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                if (firebaseUser == null) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Login()));
-                } else {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Profile()));
-                }
-              });
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(30),
-        child: ListView(
-          children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundImage:
-                  _pickedImage != null ? FileImage(_pickedImage) : null,
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.purple, Colors.blue])),
+      child: Scaffold(
+        backgroundColor: Appcolors.transparent,
+        appBar: AppBar(
+          backgroundColor: Appcolors.mainColor,
+          centerTitle: true,
+          title: Text("Add Club"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainClubPage()));
+              },
             ),
-            FlatButton.icon(
-                textColor: Colors.deepPurple,
-                onPressed: _pickImage,
-                icon: Icon(Icons.image),
-                label: Text('Pick Image')),
-            buildClubNameField(),
-            sizedBox(8),
-            buildClubAdvisorField(),
-            sizedBox(8),
-            buildClubPresidentField(),
-            sizedBox(8),
-            buildClubVicePresidentField(),
-            sizedBox(8),
-            buildClubSecretaryNameField(),
-            sizedBox(8),
-            buildClubAccountantField(),
-            sizedBox(8),
-            buildClubMemberField(),
-            sizedBox(8),
-            buildClubAltMember1Field(),
-            sizedBox(8),
-            buildClubAltMember2Field(),
-            sizedBox(8),
-            buildClubDescriptionField(),
-            sizedBox(8),
-            Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  RadioListTile(
-                      value: 0,
-                      groupValue: status,
-                      title: Text("Passive"),
-                      onChanged: (value) => setState(() => status = 0)),
-                  RadioListTile(
-                      value: 1,
-                      groupValue: status,
-                      title: Text("Active"),
-                      onChanged: (value) => setState(() => status = 1))
-                ],
-              ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                  if (firebaseUser == null) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profile()));
+                  }
+                });
+              },
             ),
-            buildElevatedButton("Add Club", Appcolors.joinColor, () {})
           ],
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(30),
+          child: ListView(
+            children: [
+              CircleAvatar(
+                radius: 40,
+                backgroundImage:
+                    _pickedImage != null ? FileImage(_pickedImage) : null,
+              ),
+              FlatButton.icon(
+                  textColor: Colors.deepPurple,
+                  onPressed: _pickImage,
+                  icon: Icon(Icons.image),
+                  label: Text('Pick Image')),
+              buildClubNameField(),
+              sizedBox(8),
+              buildClubAdvisorField(),
+              sizedBox(8),
+              buildClubPresidentField(),
+              sizedBox(8),
+              buildClubVicePresidentField(),
+              sizedBox(8),
+              buildClubSecretaryNameField(),
+              sizedBox(8),
+              buildClubAccountantField(),
+              sizedBox(8),
+              buildClubMemberField(),
+              sizedBox(8),
+              buildClubAltMember1Field(),
+              sizedBox(8),
+              buildClubAltMember2Field(),
+              sizedBox(8),
+              buildClubDescriptionField(),
+              sizedBox(8),
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RadioListTile(
+                        value: 0,
+                        groupValue: status,
+                        title: Text("Passive"),
+                        onChanged: (value) => setState(() => status = 0)),
+                    RadioListTile(
+                        value: 1,
+                        groupValue: status,
+                        title: Text("Active"),
+                        onChanged: (value) => setState(() => status = 1))
+                  ],
+                ),
+              ),
+              buildElevatedButton("Add Club", Appcolors.joinColor, () {})
+            ],
+          ),
         ),
       ),
     );
@@ -333,6 +342,14 @@ class _AddClubState extends State<AddClub> {
         .collection("clubs")
         .document(clubNameController.text)
         .setData(map);
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => ClubsList()));
+    Fluttertoast.showToast(
+      msg: "Club Created!",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+    );
+    // b
     // bu urli yarattığımız kulubün imageUrl fieldina yapıştırmalıyız submit yaparken
   }
 } // end

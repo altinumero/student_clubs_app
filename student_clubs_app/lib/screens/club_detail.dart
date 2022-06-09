@@ -68,57 +68,47 @@ class _ClubDetailState extends State<ClubDetail> {
     final clubdescriptiondata = widget.clubdescriptiondata;
     final clubimagedata = widget.clubimagedata;
 
-
-    return Scaffold(
-      backgroundColor: Appcolors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Appcolors.mainColor,
-        centerTitle: true,
-        title: Text("Club Page "),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MainClubPage()));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                if (firebaseUser == null) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Login()));
-                } else {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Profile()));
-                }
-              });
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        decoration:
-        BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.purple, Colors.blue])
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.purple, Colors.blue])),
+      child: Scaffold(
+        backgroundColor: Appcolors.transparent,
+        appBar: AppBar(
+          backgroundColor: Appcolors.mainColor,
+          centerTitle: true,
+          title: Text("Club Page "),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainClubPage()));
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                  if (firebaseUser == null) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profile()));
+                  }
+                });
+              },
+            ),
+          ],
         ),
-        child: ListView(
+        body: ListView(
           physics: const BouncingScrollPhysics(),
           children: [
             sizedBox(24),
             Container(
-              /*decoration:
-              BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [Colors.purple, Colors.blue])
-              ),*/
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                   border: Border.all(),
@@ -156,12 +146,13 @@ class _ClubDetailState extends State<ClubDetail> {
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 return Text("President : " + snapshot.data,
-                                    style: TextStyle(color: Appcolors.textColor));
+                                    style:
+                                        TextStyle(color: Appcolors.textColor));
                               }
                               return Text("");
                             }),
                         Text("Advisor:${clubadvisordata} ",
-                            style: TextStyle(color: Appcolors.textColor)) ,
+                            style: TextStyle(color: Appcolors.textColor)),
                         Text("Vice President : ${clubvicepresidentdata}",
                             style: TextStyle(color: Appcolors.textColor)),
                         Text("Accountant: ${clubaccountantdata}",
@@ -198,138 +189,141 @@ class _ClubDetailState extends State<ClubDetail> {
             sizedBox(16),
             FutureBuilder(
                 future: buildMyClubList(),
-                builder: ( context,  snapshot) {
-                  if (snapshot.hasData){
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Visibility(
-                          visible: (snapshot.data.contains(clubnamedata)==false
-                              && statusdata=="Active"),
-                          child:Container(
-                                child: buildElevatedButton(
-                                    "Join Club", Appcolors.joinColor, () async{
-
-                                  final FirebaseUser user = await _auth.currentUser();
-                                  final uid = user.uid;
-
-                                  log("c" + uid);
-                                  DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
-                                  DocumentSnapshot doc = await docRef.get();
-                                  MyClubs = doc.data["MyClubs"];
-                                  if(MyClubs.contains(clubnamedata)==false){
-                                    docRef.updateData(
-                                        {
-                                          'MyClubs': FieldValue.arrayUnion(
-                                              [clubnamedata])
-                                        }
-                                    );
-                                  }
-
-                                }),
-                              ),
-
-                          ),
-                      Visibility(
-                          visible: (snapshot.data.contains(clubnamedata)==true &&
-                              statusdata=="Active"),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Visibility(
+                          visible:
+                              (snapshot.data.contains(clubnamedata) == false &&
+                                  statusdata == "Active"),
                           child: Container(
                             child: buildElevatedButton(
-                                "Leave Club", Appcolors.warningColor, () async{
-
-                              final FirebaseUser user = await _auth.currentUser();
+                                "Join Club", Appcolors.joinColor, () async {
+                              final FirebaseUser user =
+                                  await _auth.currentUser();
                               final uid = user.uid;
-                              DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
-                              DocumentSnapshot doc = await docRef.get();
-                              docRef.updateData(
-                                  {
-                                    'MyClubs': FieldValue.arrayRemove(
-                                        [clubnamedata])
-                                  }
-                              );
 
+                              log("c" + uid);
+                              DocumentReference docRef = Firestore.instance
+                                  .collection("users")
+                                  .document(uid);
+                              DocumentSnapshot doc = await docRef.get();
+                              MyClubs = doc.data["MyClubs"];
+                              if (MyClubs.contains(clubnamedata) == false) {
+                                docRef.updateData({
+                                  'MyClubs':
+                                      FieldValue.arrayUnion([clubnamedata])
+                                });
+                              }
                             }),
-                          )),
-                    ],
-                  );}else{return Text("loading");}
+                          ),
+                        ),
+                        Visibility(
+                            visible:
+                                (snapshot.data.contains(clubnamedata) == true &&
+                                    statusdata == "Active"),
+                            child: Container(
+                              child: buildElevatedButton(
+                                  "Leave Club", Appcolors.warningColor,
+                                  () async {
+                                final FirebaseUser user =
+                                    await _auth.currentUser();
+                                final uid = user.uid;
+                                DocumentReference docRef = Firestore.instance
+                                    .collection("users")
+                                    .document(uid);
+                                DocumentSnapshot doc = await docRef.get();
+                                docRef.updateData({
+                                  'MyClubs':
+                                      FieldValue.arrayRemove([clubnamedata])
+                                });
+                              }),
+                            )),
+                      ],
+                    );
+                  } else {
+                    return Text("loading");
+                  }
                 }),
             sizedBox(16),
             buildName(clubnamedata),
-        StreamBuilder(
-          stream: Firestore.instance.collection('events').where('EventOwnerClub'.toString(), isEqualTo: clubnamedata).snapshots(),
-          builder: (context, streamSnapshot) {
-            if (streamSnapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            final documents = streamSnapshot.data.documents;
-            return ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: streamSnapshot.data.documents.length,
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.all(6),
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Appcolors.textColor.withOpacity(0.2),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: Offset(0, 3))
-                      ]),
-                  child: ListTile(
-                    leading: ClipOval(
-                      child: Material(
-                        child: CircleAvatar(
-                          foregroundColor: Appcolors.textColor,
-                            child: Text("E"),
-                            backgroundColor: Appcolors.darkBlueColor),
+            StreamBuilder(
+              stream: Firestore.instance
+                  .collection('events')
+                  .where('EventOwnerClub'.toString(), isEqualTo: clubnamedata)
+                  .snapshots(),
+              builder: (context, streamSnapshot) {
+                if (streamSnapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                final documents = streamSnapshot.data.documents;
+                return ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: streamSnapshot.data.documents.length,
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Appcolors.textColor.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3))
+                          ]),
+                      child: ListTile(
+                        leading: ClipOval(
+                          child: Material(
+                            child: CircleAvatar(
+                                foregroundColor: Appcolors.textColor,
+                                child: Text("E"),
+                                backgroundColor: Appcolors.darkBlueColor),
+                          ),
+                        ),
+                        title: Text(documents[index]['EventName']),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventDetail(
+                                    eventownerdata: documents[index]
+                                        ["EventOwnerClub"],
+                                    eventnamedata: documents[index]
+                                        ['EventName'],
+                                    eventlocationdata: documents[index]
+                                        ['EventLocation'],
+                                    eventdescriptiondata: documents[index]
+                                        ['EventDescription'])),
+                          );
+                        },
                       ),
                     ),
-                    title: Text(documents[index]['EventName']),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EventDetail(
-                          eventownerdata:documents[index]["EventOwnerClub"],
-                          eventnamedata: documents[index]['EventName'],
-                          eventlocationdata: documents[index]
-                          ['EventLocation'],
-                          eventdescriptiondata: documents[index]
-                          ['EventDescription']
-                      )
-                        )
-                        ,
-                      );
-                    },
                   ),
-                ),
-              ),
-            );
-          },
-        ),
-
-
+                );
+              },
+            ),
           ],
         ),
+        bottomNavigationBar: FutureBuilder(
+            future: getCurrentUserType(),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              return Visibility(
+                visible: (snapshot.data == "sks"),
+                child: Container(
+                  child: buildElevatedButton(
+                      "Remove Club", Appcolors.warningColor, () {}),
+                ),
+              );
+            }),
       ),
-      bottomNavigationBar: FutureBuilder(
-          future: getCurrentUserType(),
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            return Visibility(
-              visible: (snapshot.data == "sks"),
-              child: Container(
-                child: buildElevatedButton(
-                    "Remove Club", Appcolors.warningColor, () {}),
-              ),
-            );
-          }),
     );
   }
 
@@ -342,8 +336,7 @@ class _ClubDetailState extends State<ClubDetail> {
       children: [
         Text(
           "${clubnamedata} Club's Events",
-          style: TextStyle(color: Appcolors.darkBlueColor,
-              fontSize: 30),
+          style: TextStyle(color: Appcolors.darkBlueColor, fontSize: 30),
         )
       ],
     );
@@ -356,9 +349,9 @@ class _ClubDetailState extends State<ClubDetail> {
         .getDocuments();
     //final int docNumForItemCount = querySnapshot.documents.length;
     var snapshotstuff = querySnapshot.documents;
-     return  snapshotstuff;
+    return snapshotstuff;
     for (var snapshot in querySnapshot.documents) {
-    //clubnameforevent = snapshot.data["ClubName"];
+      //clubnameforevent = snapshot.data["ClubName"];
 
     }
   }
@@ -408,21 +401,25 @@ class _ClubDetailState extends State<ClubDetail> {
   }
 
   clubPresidentRealName(clubpresidentdata) async {
-    DocumentSnapshot snapshot = await Firestore.instance.collection('users').document(clubpresidentdata).get();
-     clubpresidentrealname  = snapshot.data['username'] ;
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection('users')
+        .document(clubpresidentdata)
+        .get();
+    clubpresidentrealname = snapshot.data['username'];
     return clubpresidentrealname;
   }
 
-  Future<List>buildMyClubList() async {
+  Future<List> buildMyClubList() async {
     final FirebaseUser user = await _auth.currentUser();
     final uid = user.uid;
 
     log("c" + uid);
-    DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+    DocumentReference docRef =
+        Firestore.instance.collection("users").document(uid);
     DocumentSnapshot doc = await docRef.get();
     MyClubs = doc.data["MyClubs"];
     print("mm" + MyClubs.toString());
-    log("myclubs: " +MyClubs.toString());
+    log("myclubs: " + MyClubs.toString());
 
     return MyClubs;
   }

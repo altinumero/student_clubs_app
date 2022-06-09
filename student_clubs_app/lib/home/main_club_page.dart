@@ -18,48 +18,37 @@ class MainClubPage extends StatefulWidget {
 
 class _MainClubPageState extends State<MainClubPage> {
   @override
-  bool _isLoggedin = false;
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Appcolors.mainColor,
-        centerTitle: true,
-        title: const Text("Işık Student Clubs"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                if (firebaseUser == null) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Login()));
-                } else {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Profile()));
-                }
-              });
-              /*if (_isLoggedin==true) {
-                //isLogin will add
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => const Profile()));
-              } else if (_isLoggedin==false){
-
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => Login(logindata: _isLoggedin)));
-              }*/
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        decoration:
-        BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.purple, Colors.blue])
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.purple, Colors.blue])),
+      child: Scaffold(
+        backgroundColor: Appcolors.transparent,
+        appBar: AppBar(
+          backgroundColor: Appcolors.mainColor,
+          centerTitle: true,
+          title: const Text("Işık Student Clubs"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.person),
+              onPressed: () {
+                FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                  if (firebaseUser == null) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profile()));
+                  }
+                });
+              },
+            ),
+          ],
         ),
-        child: Column(
+        body: Column(
           children: [
             Container(
               child: const Image(
@@ -98,8 +87,10 @@ class _MainClubPageState extends State<MainClubPage> {
                   width: 200,
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => EventsList()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EventsList()));
                     },
                     child: Card(
                         color: Appcolors.darkBlueColor,
@@ -107,8 +98,8 @@ class _MainClubPageState extends State<MainClubPage> {
                         child: Center(
                           child: Text(
                             "Events",
-                            style:
-                                TextStyle(fontSize: 48, color: Appcolors.textColor),
+                            style: TextStyle(
+                                fontSize: 48, color: Appcolors.textColor),
                           ),
                         )),
                   ),
@@ -117,9 +108,8 @@ class _MainClubPageState extends State<MainClubPage> {
             )
           ],
         ),
+        drawer: NavigationDrawerWidget(),
       ),
-      backgroundColor: Appcolors.backgroundColor,
-      drawer: NavigationDrawerWidget(),
     );
   }
 }

@@ -38,7 +38,7 @@ class _LoginState extends State<Login> {
         ))
                 .user;
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Profile()));
+            .push(MaterialPageRoute(builder: (context) => MainClubPage()));
       }
 
       // use the values to send login request to firebase
@@ -60,66 +60,74 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Appcolors.mainColor,
-        centerTitle: true,
-        title: Text("Login"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MainClubPage()));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                if (firebaseUser == null) {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => Login()));
-                } else {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => Profile()));
-                }
-              });
-            },
-          ),
-        ],
-      ),
-      body: ListView(children: [
-        Padding(
-          padding: EdgeInsets.all(30.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                buildEmailField(),
-                SizedBox(
-                  height: 8,
-                ),
-                buildPasswordField(),
-                SizedBox(
-                  height: 16,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    buildLoginButton(),
-                    buildResetPasswordButton(),
-                  ],
-                ),
-              ],
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.purple, Colors.blue])),
+      child: Scaffold(
+        backgroundColor: Appcolors.transparent,
+        appBar: AppBar(
+          backgroundColor: Appcolors.mainColor,
+          centerTitle: true,
+          title: Text("Login"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainClubPage()));
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                  if (firebaseUser == null) {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => Login()));
+                  } else {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => Profile()));
+                  }
+                });
+              },
+            ),
+          ],
+        ),
+        body: ListView(children: [
+          Padding(
+            padding: EdgeInsets.all(30.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  buildEmailField(),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  buildPasswordField(),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      buildLoginButton(),
+                      buildResetPasswordButton(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 

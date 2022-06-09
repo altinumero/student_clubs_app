@@ -7,4 +7,5 @@ class Appcolors {
   static const warningColor = Color(0xFFFF0000);
   static const joinColor = Color(0xFF66FF00);
   static const darkBlueColor = Color(0xFF00008B);
+  static const transparent = Colors.transparent;
 }

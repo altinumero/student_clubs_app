@@ -11,59 +11,52 @@ import 'login.dart';
 class ClubsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-
-      backgroundColor: Appcolors.backgroundColor,
-      appBar: AppBar(
-
-        backgroundColor: Appcolors.mainColor,
-        centerTitle: true,
-        title: Text("Clubs List"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.home),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MainClubPage()));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              FirebaseAuth.instance.currentUser().then((firebaseUser) {
-                if (firebaseUser == null) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Login()));
-                } else {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Profile()));
-                }
-              });
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        decoration:
-        BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.purple, Colors.blue])
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.purple, Colors.blue])),
+      child: Scaffold(
+        backgroundColor: Appcolors.transparent,
+        appBar: AppBar(
+          backgroundColor: Appcolors.mainColor,
+          centerTitle: true,
+          title: Text("Clubs List"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainClubPage()));
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                FirebaseAuth.instance.currentUser().then((firebaseUser) {
+                  if (firebaseUser == null) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Login()));
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Profile()));
+                  }
+                });
+              },
+            ),
+          ],
         ),
-        child: StreamBuilder(
-
+        body: StreamBuilder(
           stream: Firestore.instance.collection('clubs').snapshots(),
           builder: (context, streamSnapshot) {
             if (streamSnapshot.connectionState == ConnectionState.waiting) {
               return Center(
-
                 child: CircularProgressIndicator(),
               );
             }
             final documents = streamSnapshot.data.documents;
             return ListView.builder(
-
               physics: NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
@@ -82,12 +75,12 @@ class ClubsList extends StatelessWidget {
                             offset: Offset(0, 3))
                       ]),
                   child: ListTile(
-
                     leading: ClipOval(
                       child: Material(
                         child: CircleAvatar(
                             child: Ink.image(
-                              image: NetworkImage(documents[index]['clubImage']),
+                              image:
+                                  NetworkImage(documents[index]['clubImage']),
                               fit: BoxFit.cover,
                             ),
                             backgroundColor: Colors.transparent),
@@ -105,7 +98,8 @@ class ClubsList extends StatelessWidget {
                                 clubadvisordata: documents[index]['Advisor'],
                                 clubvicepresidentdata: documents[index]
                                     ['VicePresident'],
-                                clubsecretarydata: documents[index]['Secretary'],
+                                clubsecretarydata: documents[index]
+                                    ['Secretary'],
                                 clubaccountantdata: documents[index]
                                     ['Accountant'],
                                 clubmemberdata: documents[index]['ClubMember'],
@@ -116,9 +110,7 @@ class ClubsList extends StatelessWidget {
                                 statusdata: documents[index]['Status'],
                                 clubdescriptiondata: documents[index]
                                     ['Description'],
-                                clubimagedata: documents[index]['clubImage']
-                            )
-                        ),
+                                clubimagedata: documents[index]['clubImage'])),
                       );
                     },
                   ),

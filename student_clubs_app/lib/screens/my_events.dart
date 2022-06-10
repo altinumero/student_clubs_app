@@ -91,11 +91,9 @@ class _MyEventsState extends State<MyEvents> {
                             leading: ClipOval(
                               child: Material(
                                 child: CircleAvatar(
-                                    child: Text(
-                                        "Event"
-                                      //Firestore.instance.collection("clubs").document(snapshot.data[index])
-                                    ),
-                                    backgroundColor: Colors.transparent),
+                                    foregroundColor: Appcolors.textColor,
+                                    child: Text("E"),
+                                    backgroundColor: Appcolors.darkBlueColor),
                               ),
                             ),
                             title: Text(snapshot.data[index]),

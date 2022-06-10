@@ -66,18 +66,29 @@ class _ProfileState extends State<Profile> {
             sizedBox(16),
             buildName(), //veritabanından kullanıcı yolluycaz.
             sizedBox(16),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                buildElevatedButton("My Clubs", () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => MyClubs()));
-                }),
-                buildElevatedButton("My Events", () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => MyEvents()));
-                })
-              ],
+            FutureBuilder(
+                future:getCurrentUserType(),
+                builder: (context, snapshot) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Visibility(
+                      visible: (snapshot.data.toString()=="president" || snapshot.data.toString()=="student"),
+                      child:buildElevatedButton("My Clubs", () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) => MyClubs()));
+                      })
+                    ),
+                    Visibility(
+                        visible: (snapshot.data.toString()=="president" || snapshot.data.toString()=="student"),
+                        child:buildElevatedButton("My Events", () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) => MyEvents()));
+                        })
+                    )
+                  ],
+                );
+              }
             ),
           ],
         ),
@@ -92,7 +103,7 @@ class _ProfileState extends State<Profile> {
 
   buildName() {
     CollectionReference users = Firestore.instance.collection('users');
-    var currentuserid = getCurrentUser();
+    //var currentuserid = getCurrentUser();
 
     return Column(
       children: [
@@ -233,7 +244,13 @@ class _ProfileState extends State<Profile> {
       log('dataa: $clubnamefortext');
 
       return "President of the " + clubnamefortext + " club";
-    } else
+    } else if(currentUserType.toString() == "student"){
+      return "Student";
+    } else if(currentUserType.toString() == "sks") {
+      return "SKS";
+    }else if(currentUserType.toString() == "advisor") {
+      return "Advisor";
+    }
       return "";
   }
 

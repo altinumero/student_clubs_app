@@ -11,22 +11,19 @@ import '../utils/colors.dart';
 import 'login.dart';
 
 class EventDetail extends StatefulWidget {
-  EventDetail(
-      {key,
-        this.eventnamedata,
-        this.eventownerdata,
-        this.eventlocationdata,
-        this.eventimagedata,
-        this.eventdescriptiondata,
-
-        })
-      : super(key: key);
+  EventDetail({
+    key,
+    this.eventnamedata,
+    this.eventownerdata,
+    this.eventlocationdata,
+    this.eventimagedata,
+    this.eventdescriptiondata,
+  }) : super(key: key);
   final eventnamedata;
   final eventownerdata;
   final eventlocationdata;
   final eventimagedata;
   final eventdescriptiondata;
-
 
   @override
   State<EventDetail> createState() => _EventDetailState();
@@ -36,7 +33,7 @@ class _EventDetailState extends State<EventDetail> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var usertypedata;
   List MyEvents;
-
+  var currentUser;
   @override
   Widget build(BuildContext context) {
     final eventnamedata = widget.eventnamedata;
@@ -44,6 +41,9 @@ class _EventDetailState extends State<EventDetail> {
     final eventlocationdata = widget.eventlocationdata;
     final eventimagedatadata = widget.eventimagedata;
     final eventdescriptiondatadata = widget.eventdescriptiondata;
+
+    currentUser = getCurrentUserType().toString();
+    log("USERRRRRCRRR" + currentUser);
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -83,81 +83,117 @@ class _EventDetailState extends State<EventDetail> {
         body: FutureBuilder(
             future: getCurrentUserType(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              if (snapshot.hasData){
-            return ListView(
-              children: [
-                sizedBox(16),
-                buildDetails(eventnamedata,eventownerdata,eventlocationdata,eventimagedatadata,eventdescriptiondatadata),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6),
-                  child: Text(
-                    "${eventdescriptiondatadata}",
-                    style: TextStyle(color: Appcolors.textColor),
-                  ),
-                ),
-                sizedBox(16),
+              if (3+2==5) {
+                return ListView(
+                  children: [
+                    sizedBox(16),
+                    buildDetails(
+                        eventnamedata,
+                        eventownerdata,
+                        eventlocationdata,
+                        eventimagedatadata,
+                        eventdescriptiondatadata),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      child: Text(
+                        "${eventdescriptiondatadata}",
+                        style: TextStyle(color: Appcolors.textColor),
+                      ),
+                    ),
+                    sizedBox(16),
+                    FutureBuilder(
+                        future: Future.wait(
+                            [buildMyevList(), getCurrentUserType()]),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            var arraydata = snapshot.data[0];
+                            log("arraydata" + arraydata.toString());
+                            var userdata = snapshot.data[1];
+                            log("userdata" + userdata.toString());
+                            log("eventlistsnapshot " +
+                                snapshot.data.toString());
+                            log("eventboolean:" +
+                                snapshot.data
+                                    .contains(eventnamedata)
+                                    .toString());
+                            log("USERRRRRCRRRcurrr" + currentUser);
+                            return Visibility(
+                                visible: (((arraydata.contains(eventnamedata) ==
+                                            false) &&
+                                        userdata == "student") ||
+                                    ((snapshot.data.contains(eventnamedata) ==
+                                            false) &&
+                                        userdata == "president")),
+                                child: Container(
+                                  child: buildElevatedButton(
+                                      "Join Event", Appcolors.joinColor,
+                                      () async {
+                                    final FirebaseUser user =
+                                        await _auth.currentUser();
+                                    final uid = user.uid;
 
-                FutureBuilder(
-                    future: buildMyevList(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData){
-                        log("eventlistsnapshot " + snapshot.data.toString());
-                      log("eventboolean:" + snapshot.data.contains(eventnamedata).toString());
-                    return Visibility(
-
-                        visible: ( snapshot.data.contains(eventnamedata)==false),
-                        child: Container(
-
-                          child: buildElevatedButton(
-
-                              "Join Event", Appcolors.joinColor, () async{
-                            final FirebaseUser user = await _auth.currentUser();
-                            final uid = user.uid;
-
-                            log("c" + uid);
-                            DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
-                            DocumentSnapshot doc = await docRef.get();
-                            MyEvents = doc.data["MyEvents"];
-                            if(MyEvents.contains(eventnamedata)==false){
-                              docRef.updateData(
-                                  {
-                                    'MyEvents': FieldValue.arrayUnion(
-                                        [eventnamedata])
-                                  }
-                              );
-                            }
-
-                          }),
-                        ));}else { return Text("loading");}
-                  }
-                ),
-                FutureBuilder(
-                    future: buildMyevList(),
-                    builder: (context, snapshot) {
-              if (snapshot.hasData){
-                    return Visibility(
-                        visible: (snapshot.data.contains(eventnamedata)==true),
-                        child: Container(
-                          child: buildElevatedButton(
-                              "Leave Event", Appcolors.warningColor, () async {
-                            final FirebaseUser user = await _auth.currentUser();
-                            final uid = user.uid;
-                            DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
-                            DocumentSnapshot doc = await docRef.get();
-                            docRef.updateData(
-                                {
-                                  'MyEvents': FieldValue.arrayRemove(
-                                      [eventnamedata])
-                                }
-                            );
-                          }),
-                        ));}else { return Text("loading");}
-                  }
-                ),
-              ],
-            );} else { return Text("loading");}
-          }
-        ),
+                                    log("c" + uid);
+                                    DocumentReference docRef = Firestore
+                                        .instance
+                                        .collection("users")
+                                        .document(uid);
+                                    DocumentSnapshot doc = await docRef.get();
+                                    MyEvents = doc.data["MyEvents"];
+                                    if (MyEvents.contains(eventnamedata) ==
+                                        false) {
+                                      docRef.updateData({
+                                        'MyEvents': FieldValue.arrayUnion(
+                                            [eventnamedata])
+                                      });
+                                    }
+                                  }),
+                                ));
+                          } else {
+                            return Text(""); // gerekli user type değilse veya logged in değilse
+                          }
+                        }),
+                    FutureBuilder(
+                        future: Future.wait([buildMyevList(), getCurrentUserType()]),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            var arraydata = snapshot.data[0];
+                            log("arraydata" + arraydata.toString());
+                            var userdata = snapshot.data[1];
+                            return Visibility(
+                                visible: (((arraydata.contains(eventnamedata) ==
+                                            true) &&
+                                        userdata == "student") ||
+                                    ((snapshot.data.contains(eventnamedata) ==
+                                            true) &&
+                                        userdata == "president")),
+                                child: Container(
+                                  child: buildElevatedButton(
+                                      "Leave Event", Appcolors.warningColor,
+                                      () async {
+                                    final FirebaseUser user =
+                                        await _auth.currentUser();
+                                    final uid = user.uid;
+                                    DocumentReference docRef = Firestore
+                                        .instance
+                                        .collection("users")
+                                        .document(uid);
+                                    DocumentSnapshot doc = await docRef.get();
+                                    docRef.updateData({
+                                      'MyEvents': FieldValue.arrayRemove(
+                                          [eventnamedata])
+                                    });
+                                  }),
+                                ));
+                          } else {
+                            return Text(""); //gerekli user type değilse veya logged in değilse
+                          }
+                        }),
+                  ],
+                );
+              } else {
+                return Text("loading");
+              }
+            }),
         bottomNavigationBar: FutureBuilder(
             future: getCurrentUserType(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
@@ -165,7 +201,12 @@ class _EventDetailState extends State<EventDetail> {
                 visible: (snapshot.data == "sks"),
                 child: Container(
                   child: buildElevatedButton(
-                      "Remove Event", Appcolors.warningColor, () {}),
+                      "Remove Event", Appcolors.warningColor, () {
+                    Firestore.instance
+                        .collection("events")
+                        .document(eventnamedata)
+                        .delete();
+                  }),
                 ),
               );
             }),
@@ -177,7 +218,8 @@ class _EventDetailState extends State<EventDetail> {
     return SizedBox(height: i);
   }
 
-  buildDetails(eventnamedata,eventownerdata,eventlocationdata,eventimagedata,eventdescriptiondata) {
+  buildDetails(eventnamedata, eventownerdata, eventlocationdata, eventimagedata,
+      eventdescriptiondata) {
     return Column(
       children: [
         Text(" ${eventnamedata}", //veri tabanından isim
@@ -220,7 +262,7 @@ class _EventDetailState extends State<EventDetail> {
         primary: color,
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
-      onPressed: onClicked, //logout için veritabanı fonksiyonu
+      onPressed: onClicked,
       child: Text(text),
     );
   }
@@ -229,10 +271,10 @@ class _EventDetailState extends State<EventDetail> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-    await Firestore.instance.collection('users').document(uid).get();
+        await Firestore.instance.collection('users').document(uid).get();
     var userType = snapshot.data[
-    'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
-    print(userType);
+        'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    print("sss" + userType);
     return userType;
   }
 
@@ -246,11 +288,12 @@ class _EventDetailState extends State<EventDetail> {
     final uid = user.uid;
 
     log("c" + uid);
-    DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+    DocumentReference docRef =
+        Firestore.instance.collection("users").document(uid);
     DocumentSnapshot doc = await docRef.get();
     MyEvents = doc.data["MyEvents"];
     print("mm" + MyEvents.toString());
-    log("myevents: " +MyEvents.toString());
+    log("myevents: " + MyEvents.toString());
 
     return MyEvents;
   }

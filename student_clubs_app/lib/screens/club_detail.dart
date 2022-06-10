@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/event_detail.dart';
 import 'package:student_clubs_app/screens/profile.dart';
@@ -188,16 +189,20 @@ class _ClubDetailState extends State<ClubDetail> {
             ),
             sizedBox(16),
             FutureBuilder(
-                future: buildMyClubList(),
+                future:Future.wait([buildMyClubList(),getCurrentUserType()]),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
+                    var arraydata = snapshot.data[0];
+                    log("arraydata" + arraydata.toString());
+                    var userdata = snapshot.data[1];
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Visibility(
                           visible:
-                              (snapshot.data.contains(clubnamedata) == false &&
-                                  statusdata == "Active"),
+                              ( (arraydata.contains(clubnamedata) == false &&
+                                  statusdata == "Active" && userdata=="student") || (arraydata.contains(clubnamedata) == false &&
+                                  statusdata == "Active" && userdata=="president")),
                           child: Container(
                             child: buildElevatedButton(
                                 "Join Club", Appcolors.joinColor, () async {
@@ -222,8 +227,9 @@ class _ClubDetailState extends State<ClubDetail> {
                         ),
                         Visibility(
                             visible:
-                                (snapshot.data.contains(clubnamedata) == true &&
-                                    statusdata == "Active"),
+                                ((snapshot.data.contains(clubnamedata) == true &&
+                                    statusdata == "Active" && userdata=="student") || (snapshot.data.contains(clubnamedata) == true &&
+                                    statusdata == "Active" && userdata=="president")),
                             child: Container(
                               child: buildElevatedButton(
                                   "Leave Club", Appcolors.warningColor,
@@ -244,7 +250,7 @@ class _ClubDetailState extends State<ClubDetail> {
                       ],
                     );
                   } else {
-                    return Text("loading");
+                    return Text(""); // if the user is not logged in or not the required type
                   }
                 }),
             sizedBox(16),
@@ -319,7 +325,24 @@ class _ClubDetailState extends State<ClubDetail> {
                 visible: (snapshot.data == "sks"),
                 child: Container(
                   child: buildElevatedButton(
-                      "Remove Club", Appcolors.warningColor, () {}),
+                      "Remove Club", Appcolors.warningColor, () {
+         Firestore.instance.collection("clubs").document(clubnamedata).delete();
+         Firestore.instance
+             .collection("events")
+             .where('EventOwnerClub'.toString(), isEqualTo: clubnamedata)
+             .getDocuments().then((value){
+           value.documents.forEach((element) {
+             Firestore.instance.collection("events").document(element.documentID).delete().then((value){
+               print("deleting event success");
+             });
+           });
+         });
+
+
+
+
+
+                  }),
                 ),
               );
             }),

@@ -92,11 +92,9 @@ class _MyClubsState extends State<MyClubs> {
                   leading: ClipOval(
                     child: Material(
                       child: CircleAvatar(
-                          child: Text(
-                              "Club"
-                                  //Firestore.instance.collection("clubs").document(snapshot.data[index])
-                          ),
-                          backgroundColor: Colors.transparent),
+                          foregroundColor: Appcolors.textColor,
+                          child: Text("C"),
+                          backgroundColor: Appcolors.darkBlueColor),
                     ),
                   ),
                   title: Text(snapshot.data[index]),
@@ -153,6 +151,7 @@ class _MyClubsState extends State<MyClubs> {
 DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
 DocumentSnapshot doc = await docRef.get();
  MyClubs = doc.data["MyClubs"];
+
  print("mm" + MyClubs.toString());
 log("myclubs: " +MyClubs.toString());
 

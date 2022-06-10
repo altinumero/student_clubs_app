@@ -91,8 +91,6 @@ class _CreateEventState extends State<CreateEvent> {
             children: [
               buildEventNameField(),
               sizedBox(16),
-              buildEventOwnerField(),
-              sizedBox(16),
               buildEventPlaceField(),
               sizedBox(16),
               buildEventDescriptionField(),
@@ -212,7 +210,7 @@ class _CreateEventState extends State<CreateEvent> {
     };
     Firestore.instance
         .collection("events")
-        .document(forID)
+        .document(eventNameController.text)
         .setData(map);
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => EventsList()));

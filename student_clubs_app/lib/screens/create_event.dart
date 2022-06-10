@@ -23,7 +23,7 @@ class CreateEvent extends StatefulWidget {
 
 class _CreateEventState extends State<CreateEvent> {
   Map<String, String> mydata;
-  var  clubnameforevent;
+  var clubnameforevent;
   TextEditingController eventNameController = TextEditingController();
 
   TextEditingController eventPlaceController = TextEditingController();
@@ -40,15 +40,9 @@ class _CreateEventState extends State<CreateEvent> {
 
   String eventDescription;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
 
-  
-  
-  
   @override
   Widget build(BuildContext context) {
-
-
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -96,9 +90,7 @@ class _CreateEventState extends State<CreateEvent> {
               buildEventDescriptionField(),
               sizedBox(16),
               buildElevatedButton("Create", Appcolors.joinColor, () {
-                 // çalışacak method butona basınca
-
-
+                // çalışacak method butona basınca
               })
             ],
           ),
@@ -171,7 +163,7 @@ class _CreateEventState extends State<CreateEvent> {
         primary: color,
         padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
       ),
-      onPressed: (){
+      onPressed: () {
         uploadFileandSendData();
       }, //logout için veritabanı fonksiyonu
       child: Text(text),
@@ -179,18 +171,18 @@ class _CreateEventState extends State<CreateEvent> {
   }
 
   void uploadFileandSendData() async {
-    var  currentUser = await getCurrentUser();
+    var currentUser = await getCurrentUser();
     var collection = await Firestore.instance.collection('clubs');
     var querySnapshot = await collection
         .where('ClubPresident'.toString(), isEqualTo: currentUser.toString())
         .getDocuments();
 
     for (var snapshot in querySnapshot.documents) {
-       clubnameforevent = snapshot.data["ClubName"];
+      clubnameforevent = snapshot.data["ClubName"];
     }
     log('dattaaa: $clubnameforevent');
-     //clubnameforevent = mydata["ClubName"];
-   /* Firestore.instance.collection("clubs").where("ClubPresident", isEqualTo: currentUser).
+    //clubnameforevent = mydata["ClubName"];
+    /* Firestore.instance.collection("clubs").where("ClubPresident", isEqualTo: currentUser).
     getDocuments()
         .then((querysnapshot) {
       querysnapshot.documents.forEach((document) {
@@ -202,18 +194,17 @@ class _CreateEventState extends State<CreateEvent> {
     print(clubnameforevent.toString());
     var forID = DateTime.now().toString();
     final map = <String, String>{
-      "EventName":  eventNameController.text,
+      "EventName": eventNameController.text,
       "EventDescription": eventDescriptionController.text,
-      "EventLocation":  eventPlaceController.text,
+      "EventLocation": eventPlaceController.text,
       "EventOwnerClub": clubnameforevent.toString(),
-
     };
     Firestore.instance
         .collection("events")
         .document(eventNameController.text)
         .setData(map);
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => EventsList()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => EventsList()));
     Fluttertoast.showToast(
       msg: "Event Created!",
       toastLength: Toast.LENGTH_LONG,
@@ -223,7 +214,6 @@ class _CreateEventState extends State<CreateEvent> {
   }
 
   Future<String> getCurrentUser() async {
-
     FirebaseUser user = await _auth.currentUser();
     return user.uid;
   }
@@ -246,4 +236,4 @@ print("clubnameforevemt" + clubnameforevent);
 
 */
 
-}//end
+} //end

@@ -66,9 +66,8 @@ class _MyEventsState extends State<MyEvents> {
               scrollDirection: Axis.vertical,
               child: FutureBuilder(
                 future: buildEventListSez(),
-                builder: ( context,  snapshot){
+                builder: (context, snapshot) {
                   if (snapshot.hasData) {
-
                     return ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       scrollDirection: Axis.vertical,
@@ -79,7 +78,8 @@ class _MyEventsState extends State<MyEvents> {
                         child: Container(
                           decoration: BoxDecoration(
                               color: Colors.transparent,
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
                               boxShadow: [
                                 BoxShadow(
                                     color: Appcolors.textColor.withOpacity(0.2),
@@ -118,9 +118,12 @@ class _MyEventsState extends State<MyEvents> {
                         ),
                       ),
                     );
-                  } else { return Text("lodaing data");}
+                  } else {
+                    return Text("lodaing data");
+                  }
                 },
-              ),),
+              ),
+            ),
           ],
         ),
       ),
@@ -163,16 +166,18 @@ class _MyEventsState extends State<MyEvents> {
       ],
     );
   }
+
   buildEventListSez() async {
     final FirebaseUser user = await _auth.currentUser();
     final uid = user.uid;
 
     log("c" + uid);
-    DocumentReference docRef =  Firestore.instance.collection("users").document(uid);
+    DocumentReference docRef =
+        Firestore.instance.collection("users").document(uid);
     DocumentSnapshot doc = await docRef.get();
     MyEvents = doc.data["MyEvents"]; // events array list
     print("mm" + MyEvents.toString());
-    log("myclubs: " +MyEvents.toString());
+    log("myclubs: " + MyEvents.toString());
 
     return MyEvents;
   }

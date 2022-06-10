@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:student_clubs_app/screens/my_events.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
@@ -83,7 +84,7 @@ class _EventDetailState extends State<EventDetail> {
         body: FutureBuilder(
             future: getCurrentUserType(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              if (3+2==5) {
+              if (3 + 2 == 5) {
                 return ListView(
                   children: [
                     sizedBox(16),
@@ -146,14 +147,22 @@ class _EventDetailState extends State<EventDetail> {
                                             [eventnamedata])
                                       });
                                     }
+                                    setState(() {});
+                                    Fluttertoast.showToast(
+                                      msg: "Joined!",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                    );
                                   }),
                                 ));
                           } else {
-                            return Text(""); // gerekli user type değilse veya logged in değilse
+                            return Text(
+                                ""); // gerekli user type değilse veya logged in değilse
                           }
                         }),
                     FutureBuilder(
-                        future: Future.wait([buildMyevList(), getCurrentUserType()]),
+                        future: Future.wait(
+                            [buildMyevList(), getCurrentUserType()]),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             var arraydata = snapshot.data[0];
@@ -182,10 +191,17 @@ class _EventDetailState extends State<EventDetail> {
                                       'MyEvents': FieldValue.arrayRemove(
                                           [eventnamedata])
                                     });
+                                    setState(() {});
+                                    Fluttertoast.showToast(
+                                      msg: "Leaved!",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
+                                    );
                                   }),
                                 ));
                           } else {
-                            return Text(""); //gerekli user type değilse veya logged in değilse
+                            return Text(
+                                ""); //gerekli user type değilse veya logged in değilse
                           }
                         }),
                   ],

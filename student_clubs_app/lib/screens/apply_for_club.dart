@@ -48,7 +48,7 @@ class _ApplyForClubState extends State<ApplyForClub> {
         appBar: AppBar(
           backgroundColor: Appcolors.mainColor,
           centerTitle: true,
-          title: Text("Documents for Applying a Club"),
+          title: Text("Documents to Apply"),
           actions: [
             IconButton(
               icon: const Icon(Icons.home),
@@ -76,41 +76,74 @@ class _ApplyForClubState extends State<ApplyForClub> {
         body: Center(
             child: ListView(
           children: [
-            RaisedButton.icon(
-                onPressed: () async {
-                  String realpath =
-                      await ExtStorage.getExternalStoragePublicDirectory(
-                          ExtStorage.DIRECTORY_DOWNLOADS);
-                  String fullPath = realpath + "/klup_danisman_kabul_form.pdf";
-                  print('full path ${fullPath}');
-
-                  downloadClubFile(dio, imgUrl1, fullPath);
-                },
-                icon: Icon(
-                  Icons.file_download,
-                  color: Colors.white,
+            SizedBox(
+              height: 40,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 200,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Appcolors.transparent,
+                    border: Border.all(color: Appcolors.darkBlueColor)),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Text(
+                    "You need to download all the files below and fill them. "
+                    "After that you have to give all the documents by hand to "
+                    "SKS department inside the university "
+                    " to be able to create a club. ",
+                    style: TextStyle(color: Appcolors.textColor, fontSize: 25),
+                  ),
                 ),
-                color: Colors.green,
-                textColor: Colors.white,
-                label: Text('Download Kulup Danisman Kabul Formu')),
-            RaisedButton.icon(
-                onPressed: () async {
-                  String realpath =
-                      await ExtStorage.getExternalStoragePublicDirectory(
-                          ExtStorage.DIRECTORY_DOWNLOADS);
-                  //var tempDir = await getTemporaryDirectory();
-                  String fullPath = realpath + "/taahhutname.pdf";
-                  print('full path ${fullPath}');
+              ),
+            ),
+            SizedBox(
+              height: 50,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RaisedButton.icon(
+                  onPressed: () async {
+                    String realpath =
+                        await ExtStorage.getExternalStoragePublicDirectory(
+                            ExtStorage.DIRECTORY_DOWNLOADS);
+                    String fullPath =
+                        realpath + "/klup_danisman_kabul_form.docx";
+                    print('full path ${fullPath}');
 
-                  downloadClubFile(dio, imgUrl2, fullPath);
-                },
-                icon: Icon(
-                  Icons.file_download,
-                  color: Colors.white,
-                ),
-                color: Colors.green,
-                textColor: Colors.white,
-                label: Text('Download Taahhutname'))
+                    downloadClubFile(dio, imgUrl1, fullPath);
+                  },
+                  icon: Icon(
+                    Icons.file_download,
+                    color: Colors.white,
+                  ),
+                  color: Appcolors.darkBlueColor,
+                  textColor: Colors.white,
+                  label: Text('Download Kulup Danisman Kabul Formu')),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RaisedButton.icon(
+                  onPressed: () async {
+                    String realpath =
+                        await ExtStorage.getExternalStoragePublicDirectory(
+                            ExtStorage.DIRECTORY_DOWNLOADS);
+                    //var tempDir = await getTemporaryDirectory();
+                    String fullPath = realpath + "/taahhutname.docx";
+                    print('full path ${fullPath}');
+
+                    downloadClubFile(dio, imgUrl2, fullPath);
+                  },
+                  icon: Icon(
+                    Icons.file_download,
+                    color: Colors.white,
+                  ),
+                  color: Appcolors.darkBlueColor,
+                  textColor: Colors.white,
+                  label: Text('Download Taahhutname')),
+            )
           ],
         )),
       ),

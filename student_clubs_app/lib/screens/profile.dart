@@ -51,7 +51,6 @@ class _ProfileState extends State<Profile> {
                   } else {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Profile()));
-
                   }
                 });
               }, //Burada eğer kullanıcı giriş yapmışsa profil sayfasına yoksa logine gidecek
@@ -67,29 +66,28 @@ class _ProfileState extends State<Profile> {
             buildName(), //veritabanından kullanıcı yolluycaz.
             sizedBox(16),
             FutureBuilder(
-                future:getCurrentUserType(),
+                future: getCurrentUserType(),
                 builder: (context, snapshot) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Visibility(
-                      visible: (snapshot.data.toString()=="president" || snapshot.data.toString()=="student"),
-                      child:buildElevatedButton("My Clubs", () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) => MyClubs()));
-                      })
-                    ),
-                    Visibility(
-                        visible: (snapshot.data.toString()=="president" || snapshot.data.toString()=="student"),
-                        child:buildElevatedButton("My Events", () {
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (context) => MyEvents()));
-                        })
-                    )
-                  ],
-                );
-              }
-            ),
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Visibility(
+                          visible: (snapshot.data.toString() == "president" ||
+                              snapshot.data.toString() == "student"),
+                          child: buildElevatedButton("My Clubs", () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => MyClubs()));
+                          })),
+                      Visibility(
+                          visible: (snapshot.data.toString() == "president" ||
+                              snapshot.data.toString() == "student"),
+                          child: buildElevatedButton("My Events", () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => MyEvents()));
+                          }))
+                    ],
+                  );
+                }),
           ],
         ),
         bottomNavigationBar: Container(
@@ -244,14 +242,14 @@ class _ProfileState extends State<Profile> {
       log('dataa: $clubnamefortext');
 
       return "President of the " + clubnamefortext + " club";
-    } else if(currentUserType.toString() == "student"){
+    } else if (currentUserType.toString() == "student") {
       return "Student";
-    } else if(currentUserType.toString() == "sks") {
+    } else if (currentUserType.toString() == "sks") {
       return "SKS";
-    }else if(currentUserType.toString() == "advisor") {
+    } else if (currentUserType.toString() == "advisor") {
       return "Advisor";
     }
-      return "";
+    return "";
   }
 
   Future<String> getCurrentUserName() async {

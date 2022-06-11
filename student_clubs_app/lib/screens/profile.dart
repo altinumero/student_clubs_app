@@ -111,7 +111,7 @@ class _ProfileState extends State<Profile> {
               if (snapshot.hasData) {
                 return Text(snapshot.data, //veri tabanından isim
                     style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+                    TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
               } else {
                 return Text("Loading user data...");
               }
@@ -136,12 +136,12 @@ class _ProfileState extends State<Profile> {
             return snapshot.data == null
                 ? Text("no data")
                 : Text(
-                    snapshot.data.toString(),
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  );
+              snapshot.data.toString(),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
+            );
           },
         )
       ],
@@ -199,7 +199,8 @@ class _ProfileState extends State<Profile> {
 
   Future<void> _signOut() async {
     await FirebaseAuth.instance.signOut();
-    Navigator.pop(context);
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => Login()));
   }
 
   Future<String> getCurrentUserEmail() async {
@@ -218,9 +219,9 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-        await Firestore.instance.collection('users').document(uid).get();
+    await Firestore.instance.collection('users').document(uid).get();
     var userType = snapshot.data[
-        'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
     log("usertype: " + userType);
     return userType;
   }
@@ -256,9 +257,9 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-        await Firestore.instance.collection('users').document(uid).get();
+    await Firestore.instance.collection('users').document(uid).get();
     var username = snapshot.data[
-        'username']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    'username']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
     return username;
   }
 
@@ -266,9 +267,9 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-        await Firestore.instance.collection('users').document(uid).get();
+    await Firestore.instance.collection('users').document(uid).get();
     var userImage = snapshot.data[
-        'userImage']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+    'userImage']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
     return userImage;
   }
 }

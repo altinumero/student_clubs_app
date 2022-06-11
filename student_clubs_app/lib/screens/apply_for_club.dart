@@ -110,7 +110,7 @@ class _ApplyForClubState extends State<ApplyForClub> {
                         await ExtStorage.getExternalStoragePublicDirectory(
                             ExtStorage.DIRECTORY_DOWNLOADS);
                     String fullPath =
-                        realpath + "/klup_danisman_kabul_form.docx";
+                        realpath + "/klup_danisman_kabul_form.pdf";
                     print('full path ${fullPath}');
 
                     downloadClubFile(dio, imgUrl1, fullPath);
@@ -131,7 +131,7 @@ class _ApplyForClubState extends State<ApplyForClub> {
                         await ExtStorage.getExternalStoragePublicDirectory(
                             ExtStorage.DIRECTORY_DOWNLOADS);
                     //var tempDir = await getTemporaryDirectory();
-                    String fullPath = realpath + "/taahhutname.docx";
+                    String fullPath = realpath + "/taahhutname.pdf";
                     print('full path ${fullPath}');
 
                     downloadClubFile(dio, imgUrl2, fullPath);

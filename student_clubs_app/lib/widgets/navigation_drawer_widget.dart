@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/add_club.dart';
 import 'package:student_clubs_app/screens/apply_for_club.dart';
 import 'package:student_clubs_app/screens/approve.dart';
+import 'package:student_clubs_app/screens/approveSKS.dart';
 import 'package:student_clubs_app/screens/check_event_reports.dart';
 import 'package:student_clubs_app/screens/check_monthly_reports.dart';
 import 'package:student_clubs_app/screens/create_event.dart';
@@ -102,7 +103,7 @@ var usertypedata;
                       onClicked: () => selectedItem(context, 6)),
                 ),
                 Visibility(
-                  visible: (snapshot.data=="advisor" || snapshot.data=="sks"),
+                  visible: (snapshot.data=="advisor"),
                   child: buildMenuItem(
                       text: "Approve Event",
                       icon: Icons.approval,
@@ -111,30 +112,37 @@ var usertypedata;
                 Visibility(
                   visible: (snapshot.data=="sks"),
                   child: buildMenuItem(
+                      text: "Approve Event",
+                      icon: Icons.approval,
+                      onClicked: () => selectedItem(context, 8)),
+                ),
+                Visibility(
+                  visible: (snapshot.data=="sks"),
+                  child: buildMenuItem(
                       text: "Add Club",
                       icon: Icons.add,
-                      onClicked: () => selectedItem(context, 8)),
+                      onClicked: () => selectedItem(context, 9)),
                 ),
                 Visibility(
                   visible: (snapshot.data=="student" ),
                   child: buildMenuItem(
                       text: "Apply For Club",
                       icon: Icons.create,
-                      onClicked: () => selectedItem(context, 9)),
+                      onClicked: () => selectedItem(context, 10)),
                 ),
                 Visibility(
                   visible: (snapshot.data=="advisor" || snapshot.data=="sks"),
                   child: buildMenuItem(
                       text: "Check Event Reports",
                       icon: Icons.remove_red_eye_outlined,
-                      onClicked: () => selectedItem(context, 10)),
+                      onClicked: () => selectedItem(context, 11)),
                 ),
                 Visibility(
                   visible: (snapshot.data=="advisor" || snapshot.data=="sks" ),
                   child: buildMenuItem(
                       text: "Check Monthly Reports",
                       icon: Icons.remove_red_eye_outlined,
-                      onClicked: () => selectedItem(context, 11)),
+                      onClicked: () => selectedItem(context, 12)),
                 ),
               ],
             ),
@@ -196,17 +204,21 @@ var usertypedata;
         break;
       case 8:
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => AddClub()));
+            .push(MaterialPageRoute(builder: (context) =>  ApproveSKS()));
         break;
       case 9:
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) =>  ApplyForClub()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => AddClub()));
         break;
       case 10:
         Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => CheckEventReports()));
+            MaterialPageRoute(builder: (context) =>  ApplyForClub()));
         break;
       case 11:
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => CheckEventReports()));
+        break;
+      case 12:
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const CheckMonthlyReports()));
         break;

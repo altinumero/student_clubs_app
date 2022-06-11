@@ -53,7 +53,10 @@ class EventsList extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             children: [
               StreamBuilder(
-                stream: Firestore.instance.collection('events').snapshots(),
+                stream: Firestore.instance
+                    .collection('events')
+                    .where("approvedBySKS", isEqualTo: "true")
+                    .snapshots(),
                 builder: (context, streamSnapshot) {
                   if (streamSnapshot.connectionState ==
                       ConnectionState.waiting) {

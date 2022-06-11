@@ -198,6 +198,8 @@ class _CreateEventState extends State<CreateEvent> {
       "EventDescription": eventDescriptionController.text,
       "EventLocation": eventPlaceController.text,
       "EventOwnerClub": clubnameforevent.toString(),
+      "approvedBySKS" : "false",
+      "approvedByAdvisor" : "false"
     };
     Firestore.instance
         .collection("events")

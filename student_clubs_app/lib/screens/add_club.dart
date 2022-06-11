@@ -25,22 +25,6 @@ class AddClub extends StatefulWidget {
 class _AddClubState extends State<AddClub> {
   TextEditingController clubNameController = TextEditingController();
 
-  TextEditingController clubAdvisorController = TextEditingController();
-
-  TextEditingController clubPresidentController = TextEditingController();
-
-  TextEditingController clubVicePresidentController = TextEditingController();
-
-  TextEditingController clubSecretaryController = TextEditingController();
-
-  TextEditingController clubAccountantController = TextEditingController();
-
-  TextEditingController clubMemberController = TextEditingController();
-
-  TextEditingController clubAltMember1Controller = TextEditingController();
-
-  TextEditingController clubAltMember2Controller = TextEditingController();
-
   TextEditingController clubDescriptionController = TextEditingController();
 
   int status = 0;

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/profile.dart';
@@ -51,6 +52,30 @@ class _CheckEventReportsState extends State<CheckEventReports> {
               },
             ),
           ],
+        ),
+        body: StreamBuilder(
+          stream: Firestore.instance.collection("clubs").snapshots(),
+          builder: (context, streamSnapshot) {
+            return ListView.builder(
+              itemCount: streamSnapshot.data.documents.length,
+              itemBuilder: (context, index) => SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 10, right: 10, top: 10, bottom: 0),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          streamSnapshot.data.documents['EventReports'][index]
+                              ['eventdes'],
+                          style:
+                              TextStyle(fontSize: 20, color: Colors.red[500]),
+                        )
+                      ]),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

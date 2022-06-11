@@ -7,7 +7,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
 import '../home/main_club_page.dart';
@@ -20,32 +22,11 @@ class CreateEventReport extends StatefulWidget {
 }
 
 class _CreateEventReportState extends State<CreateEventReport> {
-  var usertypedata;
-
-  List eventReportsListOfTheClub;
-
-  var clubnameforevent;
-
-  var urltobeadded;
-
+  TextEditingController eventReportDescriptionController =
+      TextEditingController();
+  var selectedEvent;
+  String selectEvent = "Select Event";
   var clubnamefortext;
-
-  var urldata;
-
-  var clubnamedata;
-
-  File _pickedImage;
-
-  DocumentReference docRef;
-  void _pickImage() async {
-    final pickedImageFile =
-        await ImagePicker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      _pickedImage = pickedImageFile;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -86,44 +67,60 @@ class _CreateEventReportState extends State<CreateEventReport> {
         ),
         body: Padding(
           padding: EdgeInsets.all(30),
-          child: ListView(
-            children: [
-              FutureBuilder(
-                  future: Future.wait([getClubNameOfPresident()]),
-                  builder: (context, snapshot) {
-                    clubnamedata = snapshot.data[0];
-
-                    debugPrint('clubbb: ' + clubnamedata.toString());
-
-                    return buildElevatedButton(
-                        "Add Report", Appcolors.joinColor, () async {
-                      /*Firestore.instance
-                          .collection("clubs")
-                          .document(clubnamedata)
-                          .updateData();*/
+          child: FutureBuilder(
+              future: getPresidentUsersClubName(),
+              builder: (context, snapshot) {
+                return StreamBuilder(
+                    stream: Firestore.instance
+                        .collection('events')
+                        .where("EventOwnerClub", isEqualTo: snapshot.data)
+                        .snapshots(),
+                    builder: (context, streamSnapshot) {
+                      if (streamSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      final documents = streamSnapshot.data.documents;
+                      return ListView(
+                        children: [
+                          sizedBox(8),
+                          buildEventOwnerField(documents),
+                          sizedBox(8),
+                          buildEventReportDescriptionField(),
+                          sizedBox(8),
+                          buildElevatedButton(
+                              "Create Event Report", Appcolors.joinColor, () {
+                            Firestore.instance
+                                .collection('clubs')
+                                .document(snapshot.data)
+                                .updateData({
+                              "EventReports": FieldValue.arrayUnion([
+                                {
+                                  'eventname':
+                                      selectedEvent["EventName"].toString(),
+                                  'eventdes':
+                                      eventReportDescriptionController.text
+                                }
+                              ])
+                            });
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MainClubPage()));
+                            Fluttertoast.showToast(
+                              msg: "Created!",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                            );
+                          })
+                        ],
+                      );
                     });
-                  })
-              //Template indirme kısmı olacak
-              //upload etme kısmı olacak
-              //upload yapan kişi hangi kulübün başkanıysa report o kulübe ait olacak
-              //o kulübün advisorı bu sayede raporları görecek
-            ],
-          ),
+              }),
         ),
       ),
-    );
-  }
-
-  buildElevatedButton(String text, Color color, VoidCallback onClicked) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        shape: StadiumBorder(),
-        onPrimary: Appcolors.textColor,
-        primary: color,
-        padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
-      ),
-      onPressed: onClicked,
-      child: Text(text),
     );
   }
 
@@ -131,27 +128,6 @@ class _CreateEventReportState extends State<CreateEventReport> {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     FirebaseUser user = await _auth.currentUser();
     return user.uid;
-  }
-
-  Future<String> getClubNameOfPresident() async {
-    var currentUser = await getCurrentUser();
-    var collection = await Firestore.instance.collection('clubs');
-    var querySnapshot = await collection
-        .where('ClubPresident'.toString(), isEqualTo: currentUser.toString())
-        .getDocuments();
-
-    for (var snapshot in querySnapshot.documents) {
-      clubnameforevent = snapshot.data["ClubName"];
-    }
-    //log('dattaaa: $clubnameforevent');
-
-    return clubnameforevent;
-  }
-
-  buildEventReportList() async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final FirebaseUser user = await _auth.currentUser();
-    final uid = user.uid;
   }
 
   Future<String> getCurrentUserType() async {
@@ -179,5 +155,74 @@ class _CreateEventReportState extends State<CreateEventReport> {
     }
 
     return clubnamefortext;
+  }
+
+  sizedBox(double i) {
+    return SizedBox(height: i);
+  }
+
+  buildEventReportDescriptionField() {
+    return TextFormField(
+      maxLines: null,
+      keyboardType: TextInputType.multiline,
+      controller: eventReportDescriptionController,
+      decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: Appcolors.darkBlueColor)),
+          hintText: "Event Report Description",
+          prefixIcon: Icon(Icons.drive_file_rename_outline)),
+      validator: (value) {},
+    );
+  }
+
+  buildEventOwnerField(advisorDocuments) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: advisorDocuments
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedEvent,
+          hint: selectEvent,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedEvent = value;
+              selectEvent = selectedEvent["EventName"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
+    );
+  }
+
+  DropdownMenuItem<DocumentSnapshot> buildMenuItem(DocumentSnapshot item) {
+    return DropdownMenuItem(
+      value: item,
+      child: Text(
+        item["EventName"],
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+      ),
+    );
+  }
+
+  buildElevatedButton(String text, Color color, VoidCallback onClicked) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: StadiumBorder(),
+        onPrimary: Appcolors.textColor,
+        primary: color,
+        padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
+      ),
+      onPressed: onClicked,
+      child: Text(text),
+    );
   }
 } //end

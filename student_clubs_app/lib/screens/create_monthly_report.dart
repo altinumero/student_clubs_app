@@ -1,14 +1,33 @@
+import 'dart:developer' as dev;
+import 'dart:io';
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
 import '../home/main_club_page.dart';
 import '../utils/colors.dart';
 import 'login.dart';
 
-class CreateMonthlyReport extends StatelessWidget {
-  const CreateMonthlyReport({Key key}) : super(key: key);
+class CreateMonthlyReport extends StatefulWidget {
+  @override
+  State<CreateMonthlyReport> createState() => _CreateMonthlyReportState();
+}
 
+class _CreateMonthlyReportState extends State<CreateMonthlyReport> {
+  TextEditingController eventReportDescriptionController =
+  TextEditingController();
+  var selectedMonth;
+  String selectMonth = "Select Month";
+  var clubnamefortext;
+  var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +41,7 @@ class CreateMonthlyReport extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Appcolors.mainColor,
           centerTitle: true,
-          title: Text("Create Monthly Report"),
+          title: Text("Create Event Report"),
           actions: [
             IconButton(
               icon: const Icon(Icons.home),
@@ -47,7 +66,162 @@ class CreateMonthlyReport extends StatelessWidget {
             ),
           ],
         ),
+        body: Padding(
+          padding: EdgeInsets.all(30),
+          child: FutureBuilder(
+              future: getPresidentUsersClubName(),
+              builder: (context, snapshot) {
+                return StreamBuilder(
+                    stream: Firestore.instance
+                        .collection('events')
+                        .where("EventOwnerClub", isEqualTo: snapshot.data)
+                        .snapshots(),
+                    builder: (context, streamSnapshot) {
+                      if (streamSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      final documents = streamSnapshot.data.documents;
+                      return ListView(
+                        children: [
+                          sizedBox(8),
+                          buildReportMonthField(documents),
+                          sizedBox(8),
+                          buildEventReportDescriptionField(),
+                          sizedBox(8),
+                          buildElevatedButton(
+                              "Create Monthly Report", Appcolors.joinColor, () {
+                            Firestore.instance
+                                .collection('clubs')
+                                .document(snapshot.data)
+                                .updateData({
+                              "MonthlyReports": FieldValue.arrayUnion([
+                                {
+                                  'month':
+                                  selectedMonth.toString(),
+                                  'description':
+                                  eventReportDescriptionController.text
+                                }
+                              ])
+                            });
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MainClubPage()));
+                            Fluttertoast.showToast(
+                              msg: "Created!",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                            );
+                          })
+                        ],
+                      );
+                    });
+              }),
+        ),
       ),
     );
   }
-}
+
+  Future<String> getCurrentUser() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    FirebaseUser user = await _auth.currentUser();
+    return user.uid;
+  }
+
+  Future<String> getCurrentUserType() async {
+    final uid = await getCurrentUser();
+
+    DocumentSnapshot snapshot =
+    await Firestore.instance.collection('users').document(uid).get();
+    var userType = snapshot.data[
+    'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+
+    return userType;
+  }
+
+  Future<String> getPresidentUsersClubName() async {
+    var currentUser = await getCurrentUser(); //id
+    var currentUserType = await getCurrentUserType();
+
+    var collection = await Firestore.instance.collection('clubs');
+    var querySnapshot = await collection
+        .where('ClubPresident'.toString(), isEqualTo: currentUser.toString())
+        .getDocuments();
+
+    for (var snapshot in querySnapshot.documents) {
+      clubnamefortext = snapshot.data["ClubName"];
+    }
+
+    return clubnamefortext;
+  }
+
+  sizedBox(double i) {
+    return SizedBox(height: i);
+  }
+
+  buildEventReportDescriptionField() {
+    return TextFormField(
+      maxLines: null,
+      keyboardType: TextInputType.multiline,
+      controller: eventReportDescriptionController,
+      decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: Appcolors.darkBlueColor)),
+          hintText: "Monthly Report Description",
+          prefixIcon: Icon(Icons.drive_file_rename_outline)),
+      validator: (value) {},
+    );
+  }
+
+  buildReportMonthField(advisorDocuments) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: months.map(buildMenuItem).toList(),
+          value: selectedMonth,
+          hint: selectMonth,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedMonth = value;
+              selectMonth = selectedMonth.toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
+    );
+  }
+
+  DropdownMenuItem<String> buildMenuItem(String item) {
+    return DropdownMenuItem(
+      value: item,
+      child: Text(
+        item,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+      ),
+    );
+  }
+
+  buildElevatedButton(String text, Color color, VoidCallback onClicked) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: StadiumBorder(),
+        onPrimary: Appcolors.textColor,
+        primary: color,
+        padding: EdgeInsets.symmetric(horizontal: 64, vertical: 12),
+      ),
+      onPressed: onClicked,
+      child: Text(text),
+    );
+  }
+} //end

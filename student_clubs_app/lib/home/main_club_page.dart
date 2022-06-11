@@ -57,7 +57,7 @@ class _MainClubPageState extends State<MainClubPage> {
             ),
           ],
         ),
-        body: Column(
+        body: ListView(
           children: [
             SizedBox(height: 3),
             Container(

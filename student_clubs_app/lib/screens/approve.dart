@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,6 +20,8 @@ class Approve extends StatefulWidget {
 }
 
 class _ApproveState extends State<Approve> {
+  var advisorsclub;
+  @override
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var clubnamefortext;
   @override
@@ -59,83 +62,89 @@ class _ApproveState extends State<Approve> {
             ),
           ],
         ),
-        body: ListView(physics: const BouncingScrollPhysics(), children: [
-          FutureBuilder(
-              future: getAdvisorUsersClubName(),
-              builder: (context, snapshot) {
-                return StreamBuilder(
-                    stream: Firestore.instance
-                        .collection('events')
-                        .where("EventOwnerClub",
-                            isEqualTo: snapshot.data.toString())
-                        .snapshots(),
-                    builder: (context, streamSnapshot) {
-                      if (streamSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      final documents = streamSnapshot.data.documents;
-                      return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: streamSnapshot.data.documents.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(6),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10)),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Appcolors.textColor
-                                              .withOpacity(0.2),
-                                          spreadRadius: 5,
-                                          blurRadius: 7,
-                                          offset: Offset(0, 3))
-                                    ]),
-                                child: ListTile(
-                                  title: Text(documents[index]["EventName"]),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => EventDetail(
-                                              eventownerdata: documents[index]
-                                                  ["EventOwnerClub"],
-                                              eventnamedata: documents[index]
-                                                  ['EventName'],
-                                              eventlocationdata:
-                                                  documents[index]
-                                                      ['EventLocation'],
-                                              eventdescriptiondata:
-                                                  documents[index]
-                                                      ['EventDescription'])),
+        body: FutureBuilder(
+            future: getAdvisorUsersClubName(),
+             // You can set a default value here.
+            builder: (context, snapshot) {
+              debugPrint('datadeb: ' + snapshot.data.toString());
+            return ListView(physics: const BouncingScrollPhysics(), children: [
+              StreamBuilder(
+                  stream: Firestore.instance
+                      .collection('events').where("EventOwnerClub",isEqualTo: snapshot.data)
+                      .where("approvedByAdvisor",isEqualTo:"false" )
+                      .snapshots(),
+                  builder: (context, streamSnapshot) {
+
+                    if (streamSnapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    final documents = streamSnapshot.data.documents;
+
+                    return ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: streamSnapshot.data.documents.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Appcolors.textColor.withOpacity(0.2),
+                                        spreadRadius: 5,
+                                        blurRadius: 7,
+                                        offset: Offset(0, 3))
+                                  ]),
+                              child: ListTile(
+                                title: Text(documents[index]["EventName"]),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => EventDetail(
+                                            eventownerdata: documents[index]
+                                                ["EventOwnerClub"],
+                                            eventnamedata: documents[index]
+                                                ['EventName'],
+                                            eventlocationdata: documents[index]
+                                                ['EventLocation'],
+                                            eventdescriptiondata: documents[index]
+                                                ['EventDescription'])),
+                                  );
+                                },
+                                trailing: ElevatedButton(
+                                  child: Text("Approve"),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Appcolors.joinColor),
+                                  onPressed: () {
+                                    var updatedmap = <String, String>{"approvedByAdvisor": "true"};
+                                    Firestore.instance.collection("events")
+                                        .document(documents[index]["EventName"]).updateData(updatedmap);
+                                    Fluttertoast.showToast(
+                                      msg: "Approved!",
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.BOTTOM,
                                     );
+                                    setState(() {
+
+                                    });
                                   },
-                                  trailing: ElevatedButton(
-                                    child: Text("Tıkla"),
-                                    style: ElevatedButton.styleFrom(
-                                        primary: Appcolors.darkBlueColor),
-                                    onPressed: () {
-                                      Fluttertoast.showToast(
-                                        msg: "Leaved!",
-                                        toastLength: Toast.LENGTH_LONG,
-                                        gravity: ToastGravity.BOTTOM,
-                                      );
-                                    },
-                                  ),
                                 ),
                               ),
-                            );
-                          });
-                    });
-              }),
-        ]),
+                            ),
+                          );
+                        });
+                  })
+            ]);
+          }
+        ),
       ),
     );
   }
@@ -155,7 +164,7 @@ class _ApproveState extends State<Approve> {
     return userType;
   }
 
-  Future<String> getAdvisorUsersClubName() async {
+   getAdvisorUsersClubName() async {
     var currentUser = await getCurrentUser(); //id
 
     var collection = await Firestore.instance.collection('clubs');
@@ -165,8 +174,9 @@ class _ApproveState extends State<Approve> {
 
     for (var snapshot in querySnapshot.documents) {
       clubnamefortext = snapshot.data["ClubName"];
-      log(clubnamefortext);
     }
+    debugPrint('datanedir: ' + clubnamefortext);
     return clubnamefortext;
+
   }
 }

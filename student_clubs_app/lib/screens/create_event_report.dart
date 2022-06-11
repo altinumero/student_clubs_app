@@ -7,19 +7,45 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
 import '../home/main_club_page.dart';
 import '../utils/colors.dart';
 import 'login.dart';
 
-class CreateEventReport extends StatelessWidget {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+class CreateEventReport extends StatefulWidget {
+  @override
+  State<CreateEventReport> createState() => _CreateEventReportState();
+}
+
+class _CreateEventReportState extends State<CreateEventReport> {
   var usertypedata;
+
   List eventReportsListOfTheClub;
+
   var clubnameforevent;
+
   var urltobeadded;
+
+  var clubnamefortext;
+
+  var urldata;
+
+  var clubnamedata;
+
+  File _pickedImage;
+
   DocumentReference docRef;
+  void _pickImage() async {
+    final pickedImageFile =
+        await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _pickedImage = pickedImageFile;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -63,29 +89,18 @@ class CreateEventReport extends StatelessWidget {
           child: ListView(
             children: [
               FutureBuilder(
-                  future: getClubNameOfPresident(),
+                  future: Future.wait([getClubNameOfPresident()]),
                   builder: (context, snapshot) {
-                    var clubnamedataa = snapshot.data;
+                    clubnamedata = snapshot.data[0];
+
+                    debugPrint('clubbb: ' + clubnamedata.toString());
+
                     return buildElevatedButton(
                         "Add Report", Appcolors.joinColor, () async {
-                      //final FirebaseUser user = await _auth.currentUser();
-                      //final uid = user.uid;
-
-                      //log("nameofpres" + snapshot.data);
-                      docRef = Firestore.instance
+                      /*Firestore.instance
                           .collection("clubs")
-                          .document(clubnamedataa);
-
-                      DocumentSnapshot doc = await docRef.get();
-                      eventReportsListOfTheClub = doc.data["EventReports"];
-                      //dev.log("looo" + getPdfAndUpload().toString());
-                      urltobeadded =  getPdfAndUpload();
-                      //dev.log("urltobeadded: " + urltobeadded);
-                      docRef.updateData({
-                        'EventReports': FieldValue.arrayUnion(
-                            [urltobeadded]) // event report pdfi gönder
-                        //BUNU FUTURE BUİLDER İLE YAAAAAAP!!!!!!
-                      });
+                          .document(clubnamedata)
+                          .updateData();*/
                     });
                   })
               //Template indirme kısmı olacak
@@ -113,6 +128,7 @@ class CreateEventReport extends StatelessWidget {
   }
 
   Future<String> getCurrentUser() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     FirebaseUser user = await _auth.currentUser();
     return user.uid;
   }
@@ -133,37 +149,35 @@ class CreateEventReport extends StatelessWidget {
   }
 
   buildEventReportList() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     final FirebaseUser user = await _auth.currentUser();
     final uid = user.uid;
   }
 
-  Future getPdfAndUpload() async {
-    var rng = new Random();
-    String randomName = "";
-    for (var i = 0; i < 20; i++) {
-      print(rng.nextInt(100));
-      randomName += rng.nextInt(100).toString();
-    }
-    FilePickerResult result = await FilePicker.platform.pickFiles();
-    if(result != null) {
-      File file = File(result.files.single.path);
-      String fileName = '${randomName}.pdf';
-      //print(fileName);
-      //print('${file.bytes}');
-      savePdf(file.readAsBytesSync(), fileName);
-    }else { print("user cancelled picker??");}
+  Future<String> getCurrentUserType() async {
+    final uid = await getCurrentUser();
+
+    DocumentSnapshot snapshot =
+        await Firestore.instance.collection('users').document(uid).get();
+    var userType = snapshot.data[
+        'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+
+    return userType;
   }
 
-  Future savePdf(List<int> asset, String name) async {
-    StorageReference reference = FirebaseStorage.instance.ref().child(name);
-    StorageUploadTask uploadTask =
-        reference.putData(asset); // database'e pdfi upload edio
-    String url = await (await uploadTask.onComplete)
-        .ref
-        .getDownloadURL(); // url for downloading pdf
-    print("linkk" + url);
-    //documentFileUpload(url);
-    //urltobeadded = url;
-    return url;
+  Future<String> getPresidentUsersClubName() async {
+    var currentUser = await getCurrentUser(); //id
+    var currentUserType = await getCurrentUserType();
+
+    var collection = await Firestore.instance.collection('clubs');
+    var querySnapshot = await collection
+        .where('ClubPresident'.toString(), isEqualTo: currentUser.toString())
+        .getDocuments();
+
+    for (var snapshot in querySnapshot.documents) {
+      clubnamefortext = snapshot.data["ClubName"];
+    }
+
+    return clubnamefortext;
   }
 } //end

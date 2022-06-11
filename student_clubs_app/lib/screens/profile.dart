@@ -19,6 +19,7 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   var clubnamefortext;
+  var clubnameforadvisor;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -57,38 +58,41 @@ class _ProfileState extends State<Profile> {
             ),
           ],
         ),
-        body: ListView(
-          physics: const BouncingScrollPhysics(),
-          children: [
-            sizedBox(24),
-            buildProfileImage(), //veritabanından kullanıcı gidecek
-            sizedBox(16),
-            buildName(), //veritabanından kullanıcı yolluycaz.
-            sizedBox(16),
-            FutureBuilder(
-                future: getCurrentUserType(),
-                builder: (context, snapshot) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Visibility(
-                          visible: (snapshot.data.toString() == "president" ||
-                              snapshot.data.toString() == "student"),
-                          child: buildElevatedButton("My Clubs", () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MyClubs()));
-                          })),
-                      Visibility(
-                          visible: (snapshot.data.toString() == "president" ||
-                              snapshot.data.toString() == "student"),
-                          child: buildElevatedButton("My Events", () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => MyEvents()));
-                          }))
-                    ],
-                  );
-                }),
-          ],
+
+        body: Center(
+          child: ListView(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              buildProfileImage(), //veritabanından kullanıcı gidecek
+              sizedBox(16),
+              buildName(), //veritabanından kullanıcı yolluycaz.
+              sizedBox(16),
+              FutureBuilder(
+                  future: getCurrentUserType(),
+                  builder: (context, snapshot) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Visibility(
+                            visible: (snapshot.data.toString() == "president" ||
+                                snapshot.data.toString() == "student"),
+                            child: buildElevatedButton("My Clubs", () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => MyClubs()));
+                            })),
+                        Visibility(
+                            visible: (snapshot.data.toString() == "president" ||
+                                snapshot.data.toString() == "student"),
+                            child: buildElevatedButton("My Events", () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => MyEvents()));
+                            }))
+                      ],
+                    );
+                  }),
+            ],
+          ),
         ),
         bottomNavigationBar: Container(
           child: buildElevatedButton("Logout", () {
@@ -248,7 +252,15 @@ class _ProfileState extends State<Profile> {
     } else if (currentUserType.toString() == "sks") {
       return "SKS";
     } else if (currentUserType.toString() == "advisor") {
-      return "Advisor";
+      var collection = await Firestore.instance.collection('clubs');
+      var querySnapshot = await collection
+          .where('Advisor', isEqualTo: currentUser)
+          .getDocuments();
+
+      for (var snapshot in querySnapshot.documents) {
+        clubnameforadvisor = snapshot.data["ClubName"];
+      }
+      return "Advisor of the " + clubnameforadvisor + " Club";
     }
     return "";
   }

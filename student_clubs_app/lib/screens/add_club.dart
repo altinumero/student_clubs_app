@@ -511,6 +511,7 @@ class _AddClubState extends State<AddClub> {
         .document(clubNameController.text)
         .setData(map);
     var updatedmap = <String, String>{"userType": "president"};
+    //var updatedmap = <String, String>{"approvedByAdvisor": "true"};
     Firestore.instance
         .collection("users")
         .document(selectedPresident["userId"])

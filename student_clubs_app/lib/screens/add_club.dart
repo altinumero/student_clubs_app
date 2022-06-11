@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,13 +49,26 @@ class _AddClubState extends State<AddClub> {
   File _pickedImage;
 
   String urlForImage;
-  var selectedValue;
-  final items= ["zınk","zort","tırt","sezin", "canalp"];
-List mylist;
+  var selectedPresident;
+  var selectedVicePresident;
+  var selectedSecretary;
+  var selectedAccountant;
+  var selectedMember;
+  var selectedAltMember1;
+  var selectedAltMember2;
+  var selectedAdvisor;
+  String selectPresident = "Select President";
+  String selectVicePresident = "Select Vice President";
+  String selectSecretary = "Select Secretary";
+  String selectAccountant = "Select Accountant";
+  String selectMember = "Select Member";
+  String selectAltMember1 = "Select Alternative Member 1";
+  String selectAltMember2 = "Select Alternative Member 2";
+  String selectAdvisor = "Select Advisor";
 
   void _pickImage() async {
     final pickedImageFile =
-    await ImagePicker.pickImage(source: ImageSource.gallery);
+        await ImagePicker.pickImage(source: ImageSource.gallery);
 
     setState(() {
       _pickedImage = pickedImageFile;
@@ -102,84 +116,91 @@ List mylist;
         body: Padding(
           padding: EdgeInsets.all(30),
           child: StreamBuilder(
-              stream: Firestore.instance.collection('users').where("userType", isEqualTo: "student" ).snapshots(),
+              stream: Firestore.instance
+                  .collection('users')
+                  .where("userType", isEqualTo: "student")
+                  .snapshots(),
               builder: (context, streamSnapshot) {
                 if (streamSnapshot.connectionState == ConnectionState.waiting) {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
                 }
-                final documents = streamSnapshot.data.documents;
-
-              return ListView(
-                children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundImage:
-                    _pickedImage != null ? FileImage(_pickedImage) : null,
-                  ),
-                  FlatButton.icon(
-                      textColor: Colors.deepPurple,
-                      onPressed: _pickImage,
-                      icon: Icon(Icons.image),
-                      label: Text('Pick Image')),
-                  sizedBox(8),
-                  Container(
-                    child: SearchableDropdown.single(
-                      items: documents.map(buildMenuItem).toList(),
-                      value: selectedValue,
-                      hint: "Select one",
-                      searchHint: "Select one",
-                      onChanged: (value) {
-                        setState(() {
-                          selectedValue = value;
-                        });
-                      },
-                      isExpanded: true,
-                    ),
-                  ),
-                  buildClubNameField(),
-                  sizedBox(8),
-                  buildClubAdvisorField(),
-                  sizedBox(8),
-                  buildClubPresidentField(),
-                  sizedBox(8),
-                  buildClubVicePresidentField(),
-                  sizedBox(8),
-                  buildClubSecretaryNameField(),
-                  sizedBox(8),
-                  buildClubAccountantField(),
-                  sizedBox(8),
-                  buildClubMemberField(),
-                  sizedBox(8),
-                  buildClubAltMember1Field(),
-                  sizedBox(8),
-                  buildClubAltMember2Field(),
-                  sizedBox(8),
-                  buildClubDescriptionField(),
-                  sizedBox(8),
-                  Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        RadioListTile(
-                            value: 0,
-                            groupValue: status,
-                            title: Text("Passive"),
-                            onChanged: (value) => setState(() => status = 0)),
-                        RadioListTile(
-                            value: 1,
-                            groupValue: status,
-                            title: Text("Active"),
-                            onChanged: (value) => setState(() => status = 1))
-                      ],
-                    ),
-                  ),
-                  buildElevatedButton("Add Club", Appcolors.joinColor, () {})
-                ],
-              );
-            }
-          ),
+                return StreamBuilder(
+                    stream: Firestore.instance
+                        .collection('users')
+                        .where("userType", isEqualTo: "advisor")
+                        .snapshots(),
+                    builder: (context, streamSnapshot2) {
+                      if (streamSnapshot2.connectionState ==
+                          ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      final documents =
+                          streamSnapshot.data.documents; //student için
+                      final advisorDocuments = streamSnapshot2.data.documents;
+                      return ListView(
+                        children: [
+                          CircleAvatar(
+                            radius: 40,
+                            backgroundImage: _pickedImage != null
+                                ? FileImage(_pickedImage)
+                                : null,
+                          ),
+                          FlatButton.icon(
+                            color: Appcolors.darkBlueColor,
+                              textColor: Colors.deepPurple,
+                              onPressed: _pickImage,
+                              icon: Icon(Icons.image),
+                              label: Text('Pick Image')),
+                          sizedBox(8),
+                          buildClubNameField(),
+                          sizedBox(8),
+                          buildClubAdvisorField(advisorDocuments),
+                          sizedBox(8),
+                          buildClubPresidentField(documents),
+                          sizedBox(8),
+                          buildClubVicePresidentField(documents),
+                          sizedBox(8),
+                          buildClubSecretaryNameField(documents),
+                          sizedBox(8),
+                          buildClubAccountantField(documents),
+                          sizedBox(8),
+                          buildClubMemberField(documents),
+                          sizedBox(8),
+                          buildClubAltMember1Field(documents),
+                          sizedBox(8),
+                          buildClubAltMember2Field(documents),
+                          sizedBox(8),
+                          buildClubDescriptionField(),
+                          sizedBox(8),
+                          Container(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                RadioListTile(
+                                    value: 0,
+                                    groupValue: status,
+                                    title: Text("Passive"),
+                                    onChanged: (value) =>
+                                        setState(() => status = 0)),
+                                RadioListTile(
+                                    value: 1,
+                                    groupValue: status,
+                                    title: Text("Active"),
+                                    onChanged: (value) =>
+                                        setState(() => status = 1))
+                              ],
+                            ),
+                          ),
+                          buildElevatedButton(
+                              "Add Club", Appcolors.joinColor, () {})
+                        ],
+                      );
+                    });
+              }),
         ),
       ),
     );
@@ -193,116 +214,229 @@ List mylist;
     return TextFormField(
       controller: clubNameController,
       decoration: InputDecoration(
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: Appcolors.darkBlueColor)),
           hintText: "Club Name",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
           prefixIcon: Icon(Icons.drive_file_rename_outline)),
       validator: (value) {},
     );
   }
 
-  buildClubAdvisorField() {
-    return TextFormField(
-      controller: clubAdvisorController,
-      decoration: InputDecoration(
-          hintText: "Club Advisor",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          prefixIcon: Icon(Icons.person)),
-      validator: (value) {},
+  buildClubAdvisorField(advisorDocuments) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: advisorDocuments
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedAdvisor,
+          hint: selectAdvisor,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedAdvisor = value;
+              selectAdvisor = selectedAdvisor["username"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
     );
   }
 
-  buildClubPresidentField() {
-    return TextFormField(
-      controller: clubPresidentController,
-      decoration: InputDecoration(
-          hintText: "Club President",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          prefixIcon: Icon(Icons.person)),
-      validator: (value) {},
+  buildClubPresidentField(documents) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: documents
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedPresident,
+          hint: selectPresident,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedPresident = value;
+              selectPresident = selectedPresident["username"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
     );
   }
 
-  buildClubVicePresidentField() {
-    return TextFormField(
-      controller: clubVicePresidentController,
-      decoration: InputDecoration(
-          hintText: "Club Vice President",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          prefixIcon: Icon(Icons.person)),
-      validator: (value) {},
+  buildClubVicePresidentField(documents) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: documents
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedVicePresident,
+          hint: selectVicePresident,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedVicePresident = value;
+              selectVicePresident =
+                  selectedVicePresident["username"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
     );
   }
 
-  buildClubSecretaryNameField() {
-    return TextFormField(
-      controller: clubSecretaryController,
-      decoration: InputDecoration(
-          hintText: "Club Secretary",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          prefixIcon: Icon(Icons.drive_file_rename_outline)),
-      validator: (value) {},
+  buildClubSecretaryNameField(documents) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: documents
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedSecretary,
+          hint: selectSecretary,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedSecretary = value;
+              selectSecretary = selectedSecretary["username"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
     );
   }
 
-  buildClubAccountantField() {
-    return TextFormField(
-      controller: clubAccountantController,
-      decoration: InputDecoration(
-          hintText: "Club Accountant",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          prefixIcon: Icon(Icons.person)),
-      validator: (value) {},
+  buildClubAccountantField(documents) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: documents
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedAccountant,
+          hint: selectAccountant,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedAccountant = value;
+              selectAccountant = selectedAccountant["username"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
     );
   }
 
-  buildClubMemberField() {
-    return TextFormField(
-      controller: clubMemberController,
-      decoration: InputDecoration(
-          hintText: "Club Member",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          prefixIcon: Icon(Icons.person)),
-      validator: (value) {},
+  buildClubMemberField(documents) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: documents
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedMember,
+          hint: selectMember,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedMember = value;
+              selectMember = selectedMember["username"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
     );
   }
 
-  buildClubAltMember1Field() {
-    return TextFormField(
-      controller: clubAltMember1Controller,
-      decoration: InputDecoration(
-          hintText: "Club Alternate Member 1",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          prefixIcon: Icon(Icons.person)),
-      validator: (value) {},
+  buildClubAltMember1Field(documents) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: documents
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedAltMember1,
+          hint: selectAltMember1,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedAltMember1 = value;
+              selectAltMember1 = selectedAltMember1["username"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
     );
   }
 
-  buildClubAltMember2Field() {
-    return TextFormField(
-      controller: clubAltMember2Controller,
-      decoration: InputDecoration(
-          hintText: "Club Alternate Member 2",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          prefixIcon: Icon(Icons.person)),
-      validator: (value) {},
+  buildClubAltMember2Field(documents) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Appcolors.transparent,
+          border: Border.all(color: Appcolors.darkBlueColor)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SearchableDropdown.single(
+          items: documents
+              .map<DropdownMenuItem<DocumentSnapshot>>(buildMenuItem)
+              .toList(),
+          value: selectedAltMember2,
+          hint: selectAltMember2,
+          searchHint: "Select one",
+          onChanged: (value) {
+            setState(() {
+              selectedAltMember2 = value;
+              selectAltMember2 = selectedAltMember2["username"].toString();
+            });
+          },
+          isExpanded: true,
+        ),
+      ),
     );
   }
 
@@ -353,7 +487,7 @@ List mylist;
         .onComplete; // bu imageı database upload ediyo
 
     final url =
-    await ref.getDownloadURL(); // this is the url for downloading the image
+        await ref.getDownloadURL(); // this is the url for downloading the image
 
     final map = <String, String>{
       "Advisor": clubAdvisorController.text,
@@ -385,28 +519,12 @@ List mylist;
   }
 
   DropdownMenuItem<DocumentSnapshot> buildMenuItem(DocumentSnapshot item) {
-    return DropdownMenuItem(value: item,child: Text(item["username"],style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),);
+    return DropdownMenuItem(
+      value: item,
+      child: Text(
+        item["username"],
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+      ),
+    );
   }
-
-
-  getStudentUsers(){
-    Firestore.instance
-        .collection("users")
-        .where('userType'.toString(),
-        isEqualTo: "student")
-        .getDocuments()
-        .then((value) {
-      value.documents.forEach((element) {
-        Firestore.instance
-            .collection("users")
-            .document(element.documentID).get()
-            .then((value) {
-          print("deleting event success");
-        });
-      });
-    });
-
-  }
-
-
 } // end

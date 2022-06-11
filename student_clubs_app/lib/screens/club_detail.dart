@@ -55,6 +55,14 @@ class _ClubDetailState extends State<ClubDetail> {
   }
 
   var clubpresidentrealname;
+  var clubadvisorrealname;
+  var clubvicepresidentrealname;
+  var clubaccountantrealname;
+  var clubsecretaryrealname;
+  var clubmemberrealname;
+  var clubalternatememberrealname;
+  var clubalternatemember2realname;
+
   List MyClubs;
 
   Widget build(BuildContext context) {
@@ -154,20 +162,76 @@ class _ClubDetailState extends State<ClubDetail> {
                               }
                               return Text("");
                             }),
-                        Text("Advisor:${clubadvisordata} ",
-                            style: TextStyle(color: Appcolors.textColor)),
-                        Text("Vice President : ${clubvicepresidentdata}",
-                            style: TextStyle(color: Appcolors.textColor)),
-                        Text("Accountant: ${clubaccountantdata}",
-                            style: TextStyle(color: Appcolors.textColor)),
-                        Text("Secretary:${clubsecretarydata} ",
-                            style: TextStyle(color: Appcolors.textColor)),
-                        Text("Member: ${clubmemberdata}",
-                            style: TextStyle(color: Appcolors.textColor)),
-                        Text("Alternate Member: ${clubaltmember1data}",
-                            style: TextStyle(color: Appcolors.textColor)),
-                        Text("Alternate Member 2:${clubaltmember2data} ",
-                            style: TextStyle(color: Appcolors.textColor)),
+                        FutureBuilder(
+                            future: clubAdvisorRealName(clubadvisordata),
+                            //initialData: null, // You can set a default value here.
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text("Advisor:${snapshot.data} ",
+                                    style:
+                                        TextStyle(color: Appcolors.textColor));
+                              }
+                            }),
+                        FutureBuilder(
+                            future: clubVicePresidentRealName(clubvicepresidentdata),
+                            //initialData: null, // You can set a default value here.
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text("Vice President:${snapshot.data} ",
+                                    style:
+                                    TextStyle(color: Appcolors.textColor));
+                              }
+                            }),
+                        FutureBuilder(
+                            future: clubAccountantRealName(clubaccountantdata),
+                            //initialData: null, // You can set a default value here.
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text("Accountant:${snapshot.data} ",
+                                    style:
+                                    TextStyle(color: Appcolors.textColor));
+                              }
+                          }),
+                        FutureBuilder(
+                            future: clubSecretaryRealName(clubsecretarydata),
+                            //initialData: null, // You can set a default value here.
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text("Secretary:${snapshot.data} ",
+                                    style:
+                                    TextStyle(color: Appcolors.textColor));
+                              }
+                          }),
+                        FutureBuilder(
+                            future: clubMemberRealName(clubmemberdata),
+                            //initialData: null, // You can set a default value here.
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text("Member:${snapshot.data} ",
+                                    style:
+                                    TextStyle(color: Appcolors.textColor));
+                              }
+                          }),
+                        FutureBuilder(
+                            future: clubAlternateMemberRealName(clubaltmember1data),
+                            //initialData: null, // You can set a default value here.
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text("Alternate Member:${snapshot.data} ",
+                                    style:
+                                    TextStyle(color: Appcolors.textColor));
+                              }
+                          }),
+                        FutureBuilder(
+                            future: clubAlternateMember2RealName(clubaltmember2data),
+                            //initialData: null, // You can set a default value here.
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return Text("Alternate Member 2:${snapshot.data} ",
+                                    style:
+                                    TextStyle(color: Appcolors.textColor));
+                              }
+                          }),
                         Text("Status :${statusdata} ",
                             style: TextStyle(color: Appcolors.textColor)),
                       ],
@@ -195,7 +259,6 @@ class _ClubDetailState extends State<ClubDetail> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     var arraydata = snapshot.data[0];
-                    log("arraydata" + arraydata.toString());
                     var userdata = snapshot.data[1];
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -375,6 +438,11 @@ class _ClubDetailState extends State<ClubDetail> {
                                           });
                                         });
                                       });
+                                      var updatedmap = <String, String>{"userType": "student"};
+                                      Firestore.instance
+                                          .collection("users")
+                                          .document(clubpresidentdata)
+                                          .updateData(updatedmap);
                                       Navigator.pop(context);
                                       Navigator.push(
                                           context,
@@ -487,5 +555,67 @@ class _ClubDetailState extends State<ClubDetail> {
     log("myclubs: " + MyClubs.toString());
 
     return MyClubs;
+  }
+
+  clubAdvisorRealName(clubadvisordata) async {
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection('users')
+        .document(clubadvisordata)
+        .get();
+    clubadvisorrealname = snapshot.data['username'];
+    return clubadvisorrealname;
+  }
+  clubVicePresidentRealName(clubvisepresidentdata) async {
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection('users')
+        .document(clubvisepresidentdata)
+        .get();
+    clubvicepresidentrealname = snapshot.data['username'];
+    return  clubvicepresidentrealname;
+  }
+
+  clubAccountantRealName(clubaccountantdata) async {
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection('users')
+        .document(clubaccountantdata)
+        .get();
+    clubaccountantrealname = snapshot.data['username'];
+    return  clubaccountantrealname;
+  }
+
+  clubSecretaryRealName(clubsecretarydata) async {
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection('users')
+        .document(clubsecretarydata)
+        .get();
+    clubsecretaryrealname = snapshot.data['username'];
+    return  clubsecretaryrealname;
+  }
+
+  clubMemberRealName(clubmemberdata) async {
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection('users')
+        .document(clubmemberdata)
+        .get();
+    clubmemberrealname = snapshot.data['username'];
+    return  clubmemberrealname;
+  }
+
+  clubAlternateMemberRealName(clubalternatememberdata) async {
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection('users')
+        .document(clubalternatememberdata)
+        .get();
+    clubalternatememberrealname = snapshot.data['username'];
+    return  clubalternatememberrealname;
+  }
+
+  clubAlternateMember2RealName(clubalternatemember2data) async {
+    DocumentSnapshot snapshot = await Firestore.instance
+        .collection('users')
+        .document(clubalternatemember2data)
+        .get();
+    clubalternatemember2realname = snapshot.data['username'];
+    return  clubalternatemember2realname;
   }
 }

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:student_clubs_app/screens/events_list.dart';
 import 'package:student_clubs_app/screens/my_events.dart';
 import 'package:student_clubs_app/screens/profile.dart';
 
@@ -214,7 +215,7 @@ class _EventDetailState extends State<EventDetail> {
             future: getCurrentUserType(),
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               return Visibility(
-                visible: (snapshot.data == "sks"),
+                visible: (snapshot.data == "sks" || snapshot.data == "advisor"),
                 child: Container(
                   child: buildElevatedButton(
                       "Remove Event", Appcolors.warningColor, () {
@@ -222,6 +223,8 @@ class _EventDetailState extends State<EventDetail> {
                         .collection("events")
                         .document(eventnamedata)
                         .delete();
+                    Navigator.pop(context,
+                        );
                   }),
                 ),
               );

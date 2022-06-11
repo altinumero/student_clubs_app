@@ -150,11 +150,14 @@ class _AddClubState extends State<AddClub> {
                                 : null,
                           ),
                           FlatButton.icon(
-                            color: Appcolors.darkBlueColor,
-                              textColor: Colors.deepPurple,
+                              color: Appcolors.transparent,
+                              textColor: Colors.lightGreen,
                               onPressed: _pickImage,
                               icon: Icon(Icons.image),
-                              label: Text('Pick Image')),
+                              label: Text(
+                                'Pick Image',
+                                style: TextStyle(fontSize: 20),
+                              )),
                           sizedBox(8),
                           buildClubNameField(),
                           sizedBox(8),
@@ -490,15 +493,15 @@ class _AddClubState extends State<AddClub> {
         await ref.getDownloadURL(); // this is the url for downloading the image
 
     final map = <String, String>{
-      "Advisor": clubAdvisorController.text,
+      "Advisor": selectedAdvisor["userId"],
       "ClubName": clubNameController.text,
-      "ClubPresident": clubPresidentController.text,
-      "VicePresident": clubVicePresidentController.text,
-      "Secretary": clubSecretaryController.text,
-      "Accountant": clubAccountantController.text,
-      "ClubMember": clubMemberController.text,
-      "ClubAltMember": clubAltMember1Controller.text,
-      "ClubAltMember2": clubAltMember2Controller.text,
+      "ClubPresident": selectedPresident["userId"],
+      "VicePresident": selectedVicePresident["userId"],
+      "Secretary": selectedSecretary["userId"],
+      "Accountant": selectedAccountant["userId"],
+      "ClubMember": selectedMember["userId"],
+      "ClubAltMember": selectedAltMember1["userId"],
+      "ClubAltMember2": selectedAltMember2["userId"],
       "Description": clubDescriptionController.text,
       "Status": statuss,
       "clubImage": url
@@ -507,6 +510,11 @@ class _AddClubState extends State<AddClub> {
         .collection("clubs")
         .document(clubNameController.text)
         .setData(map);
+    var updatedmap = <String, String>{"userType": "president"};
+    Firestore.instance
+        .collection("users")
+        .document(selectedPresident["userId"])
+        .updateData(updatedmap);
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => ClubsList()));
     Fluttertoast.showToast(
@@ -514,6 +522,7 @@ class _AddClubState extends State<AddClub> {
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
     );
+
     // b
     // bu urli yarattığımız kulubün imageUrl fieldina yapıştırmalıyız submit yaparken
   }

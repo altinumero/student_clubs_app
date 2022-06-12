@@ -171,16 +171,19 @@ class _ClubDetailState extends State<ClubDetail> {
                                     style:
                                         TextStyle(color: Appcolors.textColor));
                               }
+                              return Text("");
                             }),
                         FutureBuilder(
-                            future: clubVicePresidentRealName(clubvicepresidentdata),
+                            future: clubVicePresidentRealName(
+                                clubvicepresidentdata),
                             //initialData: null, // You can set a default value here.
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 return Text("Vice President:${snapshot.data} ",
                                     style:
-                                    TextStyle(color: Appcolors.textColor));
+                                        TextStyle(color: Appcolors.textColor));
                               }
+                              return Text("");
                             }),
                         FutureBuilder(
                             future: clubAccountantRealName(clubaccountantdata),
@@ -189,9 +192,10 @@ class _ClubDetailState extends State<ClubDetail> {
                               if (snapshot.hasData) {
                                 return Text("Accountant:${snapshot.data} ",
                                     style:
-                                    TextStyle(color: Appcolors.textColor));
+                                        TextStyle(color: Appcolors.textColor));
                               }
-                          }),
+                              return Text("");
+                            }),
                         FutureBuilder(
                             future: clubSecretaryRealName(clubsecretarydata),
                             //initialData: null, // You can set a default value here.
@@ -199,9 +203,10 @@ class _ClubDetailState extends State<ClubDetail> {
                               if (snapshot.hasData) {
                                 return Text("Secretary:${snapshot.data} ",
                                     style:
-                                    TextStyle(color: Appcolors.textColor));
+                                        TextStyle(color: Appcolors.textColor));
                               }
-                          }),
+                              return Text("");
+                            }),
                         FutureBuilder(
                             future: clubMemberRealName(clubmemberdata),
                             //initialData: null, // You can set a default value here.
@@ -209,29 +214,36 @@ class _ClubDetailState extends State<ClubDetail> {
                               if (snapshot.hasData) {
                                 return Text("Member:${snapshot.data} ",
                                     style:
-                                    TextStyle(color: Appcolors.textColor));
+                                        TextStyle(color: Appcolors.textColor));
                               }
-                          }),
+                              return Text("");
+                            }),
                         FutureBuilder(
-                            future: clubAlternateMemberRealName(clubaltmember1data),
+                            future:
+                                clubAlternateMemberRealName(clubaltmember1data),
                             //initialData: null, // You can set a default value here.
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                return Text("Alternate Member:${snapshot.data} ",
+                                return Text(
+                                    "Alternate Member:${snapshot.data} ",
                                     style:
-                                    TextStyle(color: Appcolors.textColor));
+                                        TextStyle(color: Appcolors.textColor));
                               }
-                          }),
+                              return Text("");
+                            }),
                         FutureBuilder(
-                            future: clubAlternateMember2RealName(clubaltmember2data),
+                            future: clubAlternateMember2RealName(
+                                clubaltmember2data),
                             //initialData: null, // You can set a default value here.
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                return Text("Alternate Member 2:${snapshot.data} ",
+                                return Text(
+                                    "Alternate Member 2:${snapshot.data} ",
                                     style:
-                                    TextStyle(color: Appcolors.textColor));
+                                        TextStyle(color: Appcolors.textColor));
                               }
-                          }),
+                              return Text("");
+                            }),
                         Text("Status :${statusdata} ",
                             style: TextStyle(color: Appcolors.textColor)),
                       ],
@@ -278,7 +290,6 @@ class _ClubDetailState extends State<ClubDetail> {
                                   await _auth.currentUser();
                               final uid = user.uid;
 
-                              log("c" + uid);
                               DocumentReference docRef = Firestore.instance
                                   .collection("users")
                                   .document(uid);
@@ -433,12 +444,12 @@ class _ClubDetailState extends State<ClubDetail> {
                                               .collection("events")
                                               .document(element.documentID)
                                               .delete()
-                                              .then((value) {
-                                            print("deleting event success");
-                                          });
+                                              .then((value) {});
                                         });
                                       });
-                                      var updatedmap = <String, String>{"userType": "student"};
+                                      var updatedmap = <String, String>{
+                                        "userType": "student"
+                                      };
                                       Firestore.instance
                                           .collection("users")
                                           .document(clubpresidentdata)
@@ -524,7 +535,6 @@ class _ClubDetailState extends State<ClubDetail> {
         await Firestore.instance.collection('users').document(uid).get();
     var userType = snapshot.data[
         'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
-    print(userType);
     return userType;
   }
 
@@ -545,14 +555,10 @@ class _ClubDetailState extends State<ClubDetail> {
   Future<List> buildMyClubList() async {
     final FirebaseUser user = await _auth.currentUser();
     final uid = user.uid;
-
-    log("c" + uid);
     DocumentReference docRef =
         Firestore.instance.collection("users").document(uid);
     DocumentSnapshot doc = await docRef.get();
     MyClubs = doc.data["MyClubs"];
-    print("mm" + MyClubs.toString());
-    log("myclubs: " + MyClubs.toString());
 
     return MyClubs;
   }
@@ -565,13 +571,14 @@ class _ClubDetailState extends State<ClubDetail> {
     clubadvisorrealname = snapshot.data['username'];
     return clubadvisorrealname;
   }
+
   clubVicePresidentRealName(clubvisepresidentdata) async {
     DocumentSnapshot snapshot = await Firestore.instance
         .collection('users')
         .document(clubvisepresidentdata)
         .get();
     clubvicepresidentrealname = snapshot.data['username'];
-    return  clubvicepresidentrealname;
+    return clubvicepresidentrealname;
   }
 
   clubAccountantRealName(clubaccountantdata) async {
@@ -580,7 +587,7 @@ class _ClubDetailState extends State<ClubDetail> {
         .document(clubaccountantdata)
         .get();
     clubaccountantrealname = snapshot.data['username'];
-    return  clubaccountantrealname;
+    return clubaccountantrealname;
   }
 
   clubSecretaryRealName(clubsecretarydata) async {
@@ -589,7 +596,7 @@ class _ClubDetailState extends State<ClubDetail> {
         .document(clubsecretarydata)
         .get();
     clubsecretaryrealname = snapshot.data['username'];
-    return  clubsecretaryrealname;
+    return clubsecretaryrealname;
   }
 
   clubMemberRealName(clubmemberdata) async {
@@ -598,7 +605,7 @@ class _ClubDetailState extends State<ClubDetail> {
         .document(clubmemberdata)
         .get();
     clubmemberrealname = snapshot.data['username'];
-    return  clubmemberrealname;
+    return clubmemberrealname;
   }
 
   clubAlternateMemberRealName(clubalternatememberdata) async {
@@ -607,7 +614,7 @@ class _ClubDetailState extends State<ClubDetail> {
         .document(clubalternatememberdata)
         .get();
     clubalternatememberrealname = snapshot.data['username'];
-    return  clubalternatememberrealname;
+    return clubalternatememberrealname;
   }
 
   clubAlternateMember2RealName(clubalternatemember2data) async {
@@ -616,6 +623,6 @@ class _ClubDetailState extends State<ClubDetail> {
         .document(clubalternatemember2data)
         .get();
     clubalternatemember2realname = snapshot.data['username'];
-    return  clubalternatemember2realname;
+    return clubalternatemember2realname;
   }
 }

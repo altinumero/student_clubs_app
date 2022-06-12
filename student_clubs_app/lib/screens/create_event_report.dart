@@ -143,7 +143,6 @@ class _CreateEventReportState extends State<CreateEventReport> {
 
   Future<String> getPresidentUsersClubName() async {
     var currentUser = await getCurrentUser(); //id
-    var currentUserType = await getCurrentUserType();
 
     var collection = await Firestore.instance.collection('clubs');
     var querySnapshot = await collection

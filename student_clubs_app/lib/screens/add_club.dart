@@ -29,7 +29,6 @@ class _AddClubState extends State<AddClub> {
 
   int status = 0;
 
-  // CLUB DESCRIPTION VE CLUB STATUS FIELDALARI EKLENMESİ GEREK!!
   File _pickedImage;
 
   String urlForImage;
@@ -452,7 +451,6 @@ class _AddClubState extends State<AddClub> {
         //uploadFile();
         uploadFileandSendData();
       }, // resim database'e yükleniyor
-      //buraya başka methodlar gelcek klüp ismi vb database'e eklenmesi için
 
       child: Text(text),
     );
@@ -507,9 +505,6 @@ class _AddClubState extends State<AddClub> {
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
     );
-
-    // b
-    // bu urli yarattığımız kulubün imageUrl fieldina yapıştırmalıyız submit yaparken
   }
 
   DropdownMenuItem<DocumentSnapshot> buildMenuItem(DocumentSnapshot item) {

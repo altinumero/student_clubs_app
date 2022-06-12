@@ -58,7 +58,6 @@ class _ProfileState extends State<Profile> {
             ),
           ],
         ),
-
         body: Center(
           child: ListView(
             shrinkWrap: true,
@@ -105,7 +104,6 @@ class _ProfileState extends State<Profile> {
 
   buildName() {
     CollectionReference users = Firestore.instance.collection('users');
-    //var currentuserid = getCurrentUser();
 
     return Column(
       children: [
@@ -115,7 +113,7 @@ class _ProfileState extends State<Profile> {
               if (snapshot.hasData) {
                 return Text(snapshot.data, //veri tabanından isim
                     style:
-                    TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 24));
               } else {
                 return Text("Loading user data...");
               }
@@ -131,21 +129,20 @@ class _ProfileState extends State<Profile> {
                 return Text("Loading user data...");
               }
             }),
-        sizedBox(15),
+        sizedBox(16),
         FutureBuilder<String>(
           future: getPresidentUsersClubName(),
           initialData: null, // You can set a default value here.
           builder: (context, snapshot) {
-            debugPrint('data1: ' + snapshot.data.toString());
             return snapshot.data == null
                 ? Text("no data")
                 : Text(
-              snapshot.data.toString(),
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            );
+                    snapshot.data.toString(),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  );
           },
         )
       ],
@@ -223,10 +220,9 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-    await Firestore.instance.collection('users').document(uid).get();
+        await Firestore.instance.collection('users').document(uid).get();
     var userType = snapshot.data[
-    'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
-    log("usertype: " + userType);
+        'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
     return userType;
   }
 
@@ -243,8 +239,6 @@ class _ProfileState extends State<Profile> {
       for (var snapshot in querySnapshot.documents) {
         clubnamefortext = snapshot.data["ClubName"];
       }
-
-      log('dataa: $clubnamefortext');
 
       return "President of the " + clubnamefortext + " club";
     } else if (currentUserType.toString() == "student") {
@@ -269,9 +263,9 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-    await Firestore.instance.collection('users').document(uid).get();
+        await Firestore.instance.collection('users').document(uid).get();
     var username = snapshot.data[
-    'username']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+        'username']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
     return username;
   }
 
@@ -279,9 +273,9 @@ class _ProfileState extends State<Profile> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-    await Firestore.instance.collection('users').document(uid).get();
+        await Firestore.instance.collection('users').document(uid).get();
     var userImage = snapshot.data[
-    'userImage']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+        'userImage']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
     return userImage;
   }
 }

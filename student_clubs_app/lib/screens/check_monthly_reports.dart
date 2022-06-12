@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_clubs_app/screens/profile.dart';
@@ -51,6 +52,68 @@ class _CheckMonthlyReportsState extends State<CheckMonthlyReports> {
               },
             ),
           ],
+        ),
+        body: StreamBuilder(
+          stream: Firestore.instance.collection("clubs").snapshots(),
+          builder: (context, streamSnapshot) {
+            if (streamSnapshot.hasError) {
+              return Text('Something went wrong');
+            }
+
+            if (streamSnapshot.connectionState == ConnectionState.waiting) {
+              return Text("Loading");
+            }
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: streamSnapshot.data.documents.length,
+              itemBuilder: (context, index) => SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 10, right: 10, top: 10, bottom: 0),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ListView.builder(
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemCount: streamSnapshot
+                                .data.documents[index]['MonthlyReports'].length,
+                            itemBuilder: (context, index2) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Appcolors.transparent,
+                                      border: Border.all(
+                                          color: Appcolors.darkBlueColor)),
+                                  child: ListTile(
+                                    leading: Icon(Icons.date_range),
+                                    title: Text(
+                                      "Month :" +
+                                          streamSnapshot
+                                              .data
+                                              .documents[index]
+                                                  ['MonthlyReports'][index2]
+                                                  ["month"]
+                                              .toString(),
+                                    ),
+                                    subtitle: Text(
+                                      streamSnapshot
+                                          .data
+                                          .documents[index]['MonthlyReports']
+                                              [index2]["description"]
+                                          .toString(),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            })
+                      ]),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

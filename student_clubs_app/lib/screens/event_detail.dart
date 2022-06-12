@@ -45,7 +45,6 @@ class _EventDetailState extends State<EventDetail> {
     final eventdescriptiondatadata = widget.eventdescriptiondata;
 
     currentUser = getCurrentUserType().toString();
-    log("USERRRRRCRRR" + currentUser);
     return Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -109,16 +108,7 @@ class _EventDetailState extends State<EventDetail> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             var arraydata = snapshot.data[0];
-                            log("arraydata" + arraydata.toString());
                             var userdata = snapshot.data[1];
-                            log("userdata" + userdata.toString());
-                            log("eventlistsnapshot " +
-                                snapshot.data.toString());
-                            log("eventboolean:" +
-                                snapshot.data
-                                    .contains(eventnamedata)
-                                    .toString());
-                            log("USERRRRRCRRRcurrr" + currentUser);
                             return Visibility(
                                 visible: (((arraydata.contains(eventnamedata) ==
                                             false) &&
@@ -133,8 +123,6 @@ class _EventDetailState extends State<EventDetail> {
                                     final FirebaseUser user =
                                         await _auth.currentUser();
                                     final uid = user.uid;
-
-                                    log("c" + uid);
                                     DocumentReference docRef = Firestore
                                         .instance
                                         .collection("users")
@@ -157,8 +145,7 @@ class _EventDetailState extends State<EventDetail> {
                                   }),
                                 ));
                           } else {
-                            return Text(
-                                ""); // gerekli user type değilse veya logged in değilse
+                            return Text("");
                           }
                         }),
                     FutureBuilder(
@@ -167,7 +154,6 @@ class _EventDetailState extends State<EventDetail> {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             var arraydata = snapshot.data[0];
-                            log("arraydata" + arraydata.toString());
                             var userdata = snapshot.data[1];
                             return Visibility(
                                 visible: (((arraydata.contains(eventnamedata) ==
@@ -223,8 +209,9 @@ class _EventDetailState extends State<EventDetail> {
                         .collection("events")
                         .document(eventnamedata)
                         .delete();
-                    Navigator.pop(context,
-                        );
+                    Navigator.pop(
+                      context,
+                    );
                   }),
                 ),
               );
@@ -293,7 +280,6 @@ class _EventDetailState extends State<EventDetail> {
         await Firestore.instance.collection('users').document(uid).get();
     var userType = snapshot.data[
         'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
-    print("sss" + userType);
     return userType;
   }
 
@@ -305,14 +291,10 @@ class _EventDetailState extends State<EventDetail> {
   Future<List> buildMyevList() async {
     final FirebaseUser user = await _auth.currentUser();
     final uid = user.uid;
-
-    log("c" + uid);
     DocumentReference docRef =
         Firestore.instance.collection("users").document(uid);
     DocumentSnapshot doc = await docRef.get();
     MyEvents = doc.data["MyEvents"];
-    print("mm" + MyEvents.toString());
-    log("myevents: " + MyEvents.toString());
 
     return MyEvents;
   }

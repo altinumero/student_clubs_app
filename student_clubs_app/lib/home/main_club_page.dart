@@ -112,8 +112,11 @@ class _MainClubPageState extends State<MainClubPage> {
                       child: Center(
                           child: Text(
                         "Clubs",
-                        style:
-                            TextStyle(fontSize: 48, color: Appcolors.textColor),
+                        style: TextStyle(
+                            fontFamily: "MontserratAlternates",
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            color: Appcolors.textColor),
                       )),
                     ),
                   ),
@@ -135,7 +138,10 @@ class _MainClubPageState extends State<MainClubPage> {
                           child: Text(
                             "Events",
                             style: TextStyle(
-                                fontSize: 48, color: Appcolors.textColor),
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "MontserratAlternates",
+                                fontSize: 48,
+                                color: Appcolors.textColor),
                           ),
                         )),
                   ),

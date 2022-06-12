@@ -56,21 +56,58 @@ class _CheckEventReportsState extends State<CheckEventReports> {
         body: StreamBuilder(
           stream: Firestore.instance.collection("clubs").snapshots(),
           builder: (context, streamSnapshot) {
+            if (streamSnapshot.hasError) {
+              return Text('Something went wrong');
+            }
+
+            if (streamSnapshot.connectionState == ConnectionState.waiting) {
+              return Text("Loading");
+            }
             return ListView.builder(
+              shrinkWrap: true,
               itemCount: streamSnapshot.data.documents.length,
               itemBuilder: (context, index) => SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.only(
                       left: 10, right: 10, top: 10, bottom: 0),
-                  child: Row(
+                  child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          streamSnapshot.data.documents['EventReports'][index]
-                              ['eventdes'],
-                          style:
-                              TextStyle(fontSize: 20, color: Colors.red[500]),
-                        )
+                      children: [
+                        ListView.builder(
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemCount: streamSnapshot
+                                .data.documents[index]['EventReports'].length,
+                            itemBuilder: (context, index2) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Appcolors.transparent,
+                                      border: Border.all(
+                                          color: Appcolors.darkBlueColor)),
+                                  child: ListTile(
+                                    leading: Icon(Icons.file_copy_outlined),
+                                    title: Text(
+                                      "Report Of :" +
+                                          streamSnapshot
+                                              .data
+                                              .documents[index]['EventReports']
+                                                  [index2]["eventname"]
+                                              .toString(),
+                                    ),
+                                    subtitle: Text(
+                                      streamSnapshot
+                                          .data
+                                          .documents[index]['EventReports']
+                                              [index2]["eventdes"]
+                                          .toString(),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            })
                       ]),
                 ),
               ),

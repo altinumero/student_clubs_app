@@ -90,7 +90,6 @@ class _CreateEventState extends State<CreateEvent> {
               buildEventDescriptionField(),
               sizedBox(16),
               buildElevatedButton("Create", Appcolors.joinColor, () {
-                // çalışacak method butona basınca
               })
             ],
           ),
@@ -180,26 +179,13 @@ class _CreateEventState extends State<CreateEvent> {
     for (var snapshot in querySnapshot.documents) {
       clubnameforevent = snapshot.data["ClubName"];
     }
-    log('dattaaa: $clubnameforevent');
-    //clubnameforevent = mydata["ClubName"];
-    /* Firestore.instance.collection("clubs").where("ClubPresident", isEqualTo: currentUser).
-    getDocuments()
-        .then((querysnapshot) {
-      querysnapshot.documents.forEach((document) {
-        print("doc club name: " + document["ClubName"]);
-        clubnameforevent =document["ClubName"];
-      });
-
-    });*/
-    print(clubnameforevent.toString());
-    var forID = DateTime.now().toString();
     final map = <String, String>{
       "EventName": eventNameController.text,
       "EventDescription": eventDescriptionController.text,
       "EventLocation": eventPlaceController.text,
       "EventOwnerClub": clubnameforevent.toString(),
-      "approvedBySKS" : "false",
-      "approvedByAdvisor" : "false"
+      "approvedBySKS": "false",
+      "approvedByAdvisor": "false"
     };
     Firestore.instance
         .collection("events")
@@ -212,30 +198,10 @@ class _CreateEventState extends State<CreateEvent> {
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
     );
-    // bu urli yarattığımız kulubün imageUrl fieldina yapıştırmalıyız submit yaparken
   }
 
   Future<String> getCurrentUser() async {
     FirebaseUser user = await _auth.currentUser();
     return user.uid;
   }
-
-  /*
-   String getClubNameForEvent(){
-
-     var currentUser = getCurrentUser();
-      Firestore.instance.collection("clubs").where("ClubPresident", isEqualTo: currentUser).getDocuments()
-         .then((querysnapshot) {
-       querysnapshot.documents.forEach((document) {
-         print("doc club name: " + document["ClubName"]);
-         clubnameforevent =document.data["ClubName"];
-       });
-
-     });
-print("clubnameforevemt" + clubnameforevent);
-    return clubnameforevent;
-   }
-
-*/
-
 } //end

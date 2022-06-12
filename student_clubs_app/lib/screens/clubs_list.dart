@@ -82,8 +82,8 @@ class ClubsList extends StatelessWidget {
                           child: Material(
                             child: CircleAvatar(
                                 child: Ink.image(
-                                  image:
-                                      NetworkImage(documents[index]['clubImage']),
+                                  image: NetworkImage(
+                                      documents[index]['clubImage']),
                                   fit: BoxFit.cover,
                                 ),
                                 backgroundColor: Colors.transparent),
@@ -98,14 +98,16 @@ class ClubsList extends StatelessWidget {
                                     clubnamedata: documents[index]['ClubName'],
                                     clubpresidentdata: documents[index]
                                         ['ClubPresident'],
-                                    clubadvisordata: documents[index]['Advisor'],
+                                    clubadvisordata: documents[index]
+                                        ['Advisor'],
                                     clubvicepresidentdata: documents[index]
                                         ['VicePresident'],
                                     clubsecretarydata: documents[index]
                                         ['Secretary'],
                                     clubaccountantdata: documents[index]
                                         ['Accountant'],
-                                    clubmemberdata: documents[index]['ClubMember'],
+                                    clubmemberdata: documents[index]
+                                        ['ClubMember'],
                                     clubaltmember1data: documents[index]
                                         ['ClubAltMember'],
                                     clubaltmember2data: documents[index]
@@ -113,7 +115,8 @@ class ClubsList extends StatelessWidget {
                                     statusdata: documents[index]['Status'],
                                     clubdescriptiondata: documents[index]
                                         ['Description'],
-                                    clubimagedata: documents[index]['clubImage'])),
+                                    clubimagedata: documents[index]
+                                        ['clubImage'])),
                           );
                         },
                       ),

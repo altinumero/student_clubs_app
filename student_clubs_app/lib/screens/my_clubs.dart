@@ -96,36 +96,6 @@ class _MyClubsState extends State<MyClubs> {
                               ),
                             ),
                             title: Text(snapshot.data[index]),
-                            /* onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-
-                          builder: (context) =>ClubDetail(
-
-                                  clubnamedata: snapshot.data[index],
-                                  clubpresidentdata: snapshot.data[index]
-                                  ,
-                                  clubadvisordata: snapshot.data[index],
-                                  clubvicepresidentdata: snapshot.data[index]
-                                  ,
-                                  clubsecretarydata: snapshot.data[index],
-                                  clubaccountantdata: snapshot.data[index]
-                                  ,
-                                  clubmemberdata: snapshot.data[index],
-                                  clubaltmember1data: snapshot.data[index]
-                                  ,
-                                  clubaltmember2data: snapshot.data[index]
-                                  ,
-                                  statusdata: snapshot.data[index],
-                                  clubdescriptiondata: snapshot.data[index]
-                                  ,
-                                  clubimagedata: "https://firebasestorage.googleapis.com/v0/b/student-clubs-aaae0.appspot.com/o/clubImages%2Fsmallclubimage.jpg?alt=media&token=a67e552d-bf35-4d90-a92e-7652779d6f90"
-                              )
-                      ),
-
-                      );
-                    },*/
                           ),
                         ),
                       ),
@@ -143,28 +113,12 @@ class _MyClubsState extends State<MyClubs> {
   buildClubList() async {
     final FirebaseUser user = await _auth.currentUser();
     final uid = user.uid;
-
-    log("c" + uid);
     DocumentReference docRef =
         Firestore.instance.collection("users").document(uid);
     DocumentSnapshot doc = await docRef.get();
     MyClubs = doc.data["MyClubs"];
-
-    print("mm" + MyClubs.toString());
-    log("myclubs: " + MyClubs.toString());
-
     return MyClubs;
   }
-
-  /*Future<List<DocumentSnapshot>> getDataa() async {
-    FirebaseUser curruser = await _auth.currentUser();
-     await Firestore.instance.collection('users').document(curruser.toString())
-         .get().then((DocumentSnapshot ds) => {
-            arr = ds.data["MyArray"]
-     });
- log("arr" + arr.toString());
- return arr;
-  }*/
 
   Future<String> getCurrentUser() async {
     FirebaseUser user = await _auth.currentUser();
@@ -178,22 +132,6 @@ class _MyClubsState extends State<MyClubs> {
         await Firestore.instance.collection('users').document(uid).get();
     var userType = snapshot.data[
         'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
-    log("usertype: " + userType);
     return userType;
   }
-
-  /*myMethod() async {
-
-    var currentUserId= getCurrentUser().toString();
-    /* DocumentSnapshot snapshot = await Firestore.instance.collection('users')
-        .document(currentUserId).get();
-        myclubslist  = snapshot.data['MyClubs'] ;
-        */
-    final value = await Firestore.instance.collection("users")
-        .document(currentUserId)
-        .get();
-    myclubslist = value.data["friends"];
-    log("array: " + myclubslist);
-    return myclubslist;
-  }*/
 } //end

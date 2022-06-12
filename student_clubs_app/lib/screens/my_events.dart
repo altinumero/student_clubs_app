@@ -65,7 +65,7 @@ class _MyEventsState extends State<MyEvents> {
             SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: FutureBuilder(
-                future: buildEventListSez(),
+                future: buildEventList(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
@@ -97,23 +97,6 @@ class _MyEventsState extends State<MyEvents> {
                               ),
                             ),
                             title: Text(snapshot.data[index]),
-                            /*onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-
-                                    builder: (context) =>EventDetail(
-
-                                        eventownerdata:snapshot.data[index],
-                                        eventnamedata: snapshot.data[index],
-                                        eventlocationdata: snapshot.data[index],
-                                        eventdescriptiondata: snapshot.data[index]
-                                        //['EventDescription']
-                                    )
-                                ),
-
-                              );
-                            },*/
                           ),
                         ),
                       ),
@@ -130,55 +113,13 @@ class _MyEventsState extends State<MyEvents> {
     );
   }
 
-  buildEventList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 16,
-        ),
-        ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: 16, //kaç tane olduğu veritabanından
-          itemBuilder: (BuildContext context, int position) {
-            return ListTile(
-              leading: ClipOval(
-                child: Material(
-                  child: CircleAvatar(
-                    backgroundColor: Colors.transparent,
-                    child: Ink.image(
-                      image: NetworkImage(//logolar veritabanından
-                          "https://cdn.pixabay.com/photo/2022/05/09/17/08/mute-swan-7185076_1280.jpg"),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-              title: Text(
-                  "Zınk"), //isimler veritabanından //Text(this.products![position].name!),
-              onTap:
-                  () {}, //detay sayfasına aktarıcaz yine veritabanı bağlantısı(sqflite_demo,productListte var)
-            );
-          },
-        )
-      ],
-    );
-  }
-
-  buildEventListSez() async {
+  buildEventList() async {
     final FirebaseUser user = await _auth.currentUser();
     final uid = user.uid;
-
-    log("c" + uid);
     DocumentReference docRef =
         Firestore.instance.collection("users").document(uid);
     DocumentSnapshot doc = await docRef.get();
     MyEvents = doc.data["MyEvents"]; // events array list
-    print("mm" + MyEvents.toString());
-    log("myclubs: " + MyEvents.toString());
-
     return MyEvents;
   }
 }

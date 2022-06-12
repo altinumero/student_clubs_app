@@ -231,7 +231,6 @@ var usertypedata;
       DocumentSnapshot snapshot =
       await Firestore.instance.collection('users').document(uid).get();
       var userType = snapshot.data['userType'] ;//you can get any field value you want by writing the exact fieldName in the data[fieldName]
-      print(userType);
       return userType;
     }
 
@@ -241,26 +240,4 @@ var usertypedata;
      return user.uid;
    }
 
-   /*forUserType(){
-
-     return FutureBuilder<String>(
-         future: getCurrentUserType(),
-         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-           if (snapshot.hasData) {
-          print(snapshot.data);
-          setState(() {
-            usertypedata = snapshot.data;
-          });
-
-
-           } else {
-             print("no data");
-           }
-
-
-         }
-     );
-return (usertypedata);
-
-   }*/
 }//end

@@ -23,11 +23,24 @@ class CreateMonthlyReport extends StatefulWidget {
 
 class _CreateMonthlyReportState extends State<CreateMonthlyReport> {
   TextEditingController eventReportDescriptionController =
-  TextEditingController();
+      TextEditingController();
   var selectedMonth;
   String selectMonth = "Select Month";
   var clubnamefortext;
-  var months=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -99,10 +112,9 @@ class _CreateMonthlyReportState extends State<CreateMonthlyReport> {
                                 .updateData({
                               "MonthlyReports": FieldValue.arrayUnion([
                                 {
-                                  'month':
-                                  selectedMonth.toString(),
+                                  'month': selectedMonth.toString(),
                                   'description':
-                                  eventReportDescriptionController.text
+                                      eventReportDescriptionController.text
                                 }
                               ])
                             });
@@ -135,16 +147,15 @@ class _CreateMonthlyReportState extends State<CreateMonthlyReport> {
     final uid = await getCurrentUser();
 
     DocumentSnapshot snapshot =
-    await Firestore.instance.collection('users').document(uid).get();
+        await Firestore.instance.collection('users').document(uid).get();
     var userType = snapshot.data[
-    'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
+        'userType']; //you can get any field value you want by writing the exact fieldName in the data[fieldName]
 
     return userType;
   }
 
   Future<String> getPresidentUsersClubName() async {
     var currentUser = await getCurrentUser(); //id
-    var currentUserType = await getCurrentUserType();
 
     var collection = await Firestore.instance.collection('clubs');
     var querySnapshot = await collection

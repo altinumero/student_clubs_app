@@ -16,8 +16,6 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   @override
-
-  //var _isLoggedin = false; //are we logged in (logindata ile değiştirdim)
   final _formKey = GlobalKey<FormState>();
   Future<void> _toSubmit() async {
     try {
@@ -28,8 +26,6 @@ class _LoginState extends State<Login> {
       if (isValid) {
         _formKey.currentState
             .save(); // will save email and password from the form
-        print(email);
-        print(password);
 
         final FirebaseUser user =
             (await FirebaseAuth.instance.signInWithEmailAndPassword(

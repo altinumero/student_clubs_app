@@ -454,6 +454,15 @@ class _ClubDetailState extends State<ClubDetail> {
                                           .collection("users")
                                           .document(clubpresidentdata)
                                           .updateData(updatedmap);
+
+                                      var updatedmapadvisor = <String, String>{
+                                        "isAdvising": "false"
+                                      };
+                                      Firestore.instance
+                                          .collection("users")
+                                          .document(clubadvisordata)
+                                          .updateData(updatedmapadvisor);
+
                                       Navigator.pop(context);
                                       Navigator.push(
                                           context,

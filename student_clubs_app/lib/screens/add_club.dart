@@ -112,7 +112,7 @@ class _AddClubState extends State<AddClub> {
                 return StreamBuilder(
                     stream: Firestore.instance
                         .collection('users')
-                        .where("userType", isEqualTo: "advisor")
+                        .where("userType", isEqualTo: "advisor").where("isAdvising",isEqualTo: "false")
                         .snapshots(),
                     builder: (context, streamSnapshot2) {
                       if (streamSnapshot2.connectionState ==
@@ -493,11 +493,15 @@ class _AddClubState extends State<AddClub> {
         .document(clubNameController.text)
         .setData(map);
     var updatedmap = <String, String>{"userType": "president"};
-    //var updatedmap = <String, String>{"approvedByAdvisor": "true"};
+    var updatedmapadvisor = <String, String>{"isAdvising": "true"};
     Firestore.instance
         .collection("users")
         .document(selectedPresident["userId"])
         .updateData(updatedmap);
+    Firestore.instance
+        .collection("users")
+        .document(selectedAdvisor["userId"])
+        .updateData(updatedmapadvisor);
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => ClubsList()));
     Fluttertoast.showToast(

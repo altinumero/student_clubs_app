@@ -240,7 +240,7 @@ class _ProfileState extends State<Profile> {
         clubnamefortext = snapshot.data["ClubName"];
       }
 
-      return "President of the " + clubnamefortext + " club";
+      return "President of the " + clubnamefortext;
     } else if (currentUserType.toString() == "student") {
       return "Student";
     } else if (currentUserType.toString() == "sks") {
@@ -254,7 +254,7 @@ class _ProfileState extends State<Profile> {
       for (var snapshot in querySnapshot.documents) {
         clubnameforadvisor = snapshot.data["ClubName"];
       }
-      return "Advisor of the " + clubnameforadvisor + " Club";
+      return "Advisor of the " + clubnameforadvisor;
     }
     return "";
   }

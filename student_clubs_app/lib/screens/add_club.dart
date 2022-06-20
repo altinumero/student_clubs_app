@@ -65,7 +65,7 @@ class _AddClubState extends State<AddClub> {
           gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.purple, Colors.blue])),
+              colors: [Colors.purple,Colors.blue])),
       child: Scaffold(
         backgroundColor: Appcolors.transparent,
         appBar: AppBar(
@@ -473,8 +473,8 @@ class _AddClubState extends State<AddClub> {
 
     final url =
         await ref.getDownloadURL(); // this is the url for downloading the image
-
-    final map = <String, String>{
+    List empty;
+    final map = {
       "Advisor": selectedAdvisor["userId"],
       "ClubName": clubNameController.text,
       "ClubPresident": selectedPresident["userId"],
@@ -486,12 +486,21 @@ class _AddClubState extends State<AddClub> {
       "ClubAltMember2": selectedAltMember2["userId"],
       "Description": clubDescriptionController.text,
       "Status": statuss,
-      "clubImage": url
+      "clubImage": url,
+      "MonthlyReports": [],
+      "EventReports":[],
     };
     Firestore.instance
         .collection("clubs")
         .document(clubNameController.text)
         .setData(map);
+
+    var updatedclubmap = {"MyClubs": FieldValue.arrayUnion([ clubNameController.text])};
+    Firestore.instance
+        .collection("users")
+        .document(selectedPresident["userId"])
+        .updateData(updatedclubmap);
+
     var updatedmap = <String, String>{"userType": "president"};
     var updatedmapadvisor = <String, String>{"isAdvising": "true"};
     Firestore.instance

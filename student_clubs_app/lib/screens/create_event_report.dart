@@ -74,6 +74,7 @@ class _CreateEventReportState extends State<CreateEventReport> {
                     stream: Firestore.instance
                         .collection('events')
                         .where("EventOwnerClub", isEqualTo: snapshot.data)
+                        .where("approvedBySKS", isEqualTo: "true")
                         .snapshots(),
                     builder: (context, streamSnapshot) {
                       if (streamSnapshot.connectionState ==

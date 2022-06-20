@@ -79,7 +79,11 @@ class _CheckEventReportsState extends State<CheckEventReports> {
                             itemCount: streamSnapshot
                                 .data.documents[index]['EventReports'].length,
                             itemBuilder: (context, index2) {
-                              return Padding(
+                              if((streamSnapshot
+                                  .data.documents[index]['EventReports'])==null){
+                               return  Text("no reports");
+                              }
+                              else{ return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -106,7 +110,7 @@ class _CheckEventReportsState extends State<CheckEventReports> {
                                     ),
                                   ),
                                 ),
-                              );
+                              );}
                             })
                       ]),
                 ),

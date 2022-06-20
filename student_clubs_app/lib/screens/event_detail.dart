@@ -239,7 +239,7 @@ class _EventDetailState extends State<EventDetail> {
         ),
         sizedBox(4),
         Text(
-          "${eventownerdata} Club's Event", //veri tabanından mail
+          "${eventownerdata}'s Event", //veri tabanından mail
           style: TextStyle(color: Appcolors.textColor),
         ),
         sizedBox(4),

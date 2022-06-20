@@ -78,7 +78,7 @@ class _MainClubPageState extends State<MainClubPage> {
                               height: 250,
                               autoPlay: true,
                               enlargeCenterPage: true,
-                              onPageChanged: (index, reason) =>
+                              onPageChanged: (index,reason) =>
                                   setState(() => activeIndex = index)),
                           itemCount: urlImages.length,
                           itemBuilder: (context, index, realIndex) {

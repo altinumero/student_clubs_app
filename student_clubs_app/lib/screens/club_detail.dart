@@ -315,7 +315,7 @@ class _ClubDetailState extends State<ClubDetail> {
                                         true &&
                                     statusdata == "Active" &&
                                     userdata == "student") ||
-                                (snapshot.data.contains(clubnamedata) == true &&
+                                (arraydata.contains(clubnamedata) == true &&
                                     statusdata == "Active" &&
                                     userdata == "president")),
                             child: Container(
@@ -354,6 +354,7 @@ class _ClubDetailState extends State<ClubDetail> {
               stream: Firestore.instance
                   .collection('events')
                   .where('EventOwnerClub'.toString(), isEqualTo: clubnamedata)
+              .where("approvedBySKS", isEqualTo: "true")
                   .snapshots(),
               builder: (context, streamSnapshot) {
                 if (streamSnapshot.connectionState == ConnectionState.waiting) {
@@ -488,7 +489,7 @@ class _ClubDetailState extends State<ClubDetail> {
     return Column(
       children: [
         Text(
-          "${clubnamedata} Club's Events",
+          "${clubnamedata}'s Events",
           style: TextStyle(color: Appcolors.darkBlueColor, fontSize: 30),
         )
       ],

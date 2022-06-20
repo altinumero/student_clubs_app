@@ -79,35 +79,41 @@ class _CheckMonthlyReportsState extends State<CheckMonthlyReports> {
                             itemCount: streamSnapshot
                                 .data.documents[index]['MonthlyReports'].length,
                             itemBuilder: (context, index2) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      color: Appcolors.transparent,
-                                      border: Border.all(
-                                          color: Appcolors.darkBlueColor)),
-                                  child: ListTile(
-                                    leading: Icon(Icons.date_range),
-                                    title: Text(
-                                      "Month :" +
-                                          streamSnapshot
-                                              .data
-                                              .documents[index]
-                                                  ['MonthlyReports'][index2]
-                                                  ["month"]
-                                              .toString(),
-                                    ),
-                                    subtitle: Text(
-                                      streamSnapshot
-                                          .data
-                                          .documents[index]['MonthlyReports']
-                                              [index2]["description"]
-                                          .toString(),
+                              if ((streamSnapshot.data.documents[index]
+                                      ['MonthlyReports']) ==
+                                  null) {
+                                return Text("no reports");
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Appcolors.transparent,
+                                        border: Border.all(
+                                            color: Appcolors.darkBlueColor)),
+                                    child: ListTile(
+                                      leading: Icon(Icons.date_range),
+                                      title: Text(
+                                        "Month :" +
+                                            streamSnapshot
+                                                .data
+                                                .documents[index]
+                                                    ['MonthlyReports'][index2]
+                                                    ["month"]
+                                                .toString(),
+                                      ),
+                                      subtitle: Text(
+                                        streamSnapshot
+                                            .data
+                                            .documents[index]['MonthlyReports']
+                                                [index2]["description"]
+                                            .toString(),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             })
                       ]),
                 ),
